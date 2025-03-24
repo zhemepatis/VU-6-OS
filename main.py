@@ -1,4 +1,4 @@
-from real_machine import RealMachine
+from devices.real_machine import RealMachine
 from components.cpu import CPU
 
 cpu = CPU()
