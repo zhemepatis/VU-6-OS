@@ -1,5 +1,5 @@
 class VirtualMachine:
-    def __init__(self):
+    def __init__(self, cpu):
         pass
 
     # runs command

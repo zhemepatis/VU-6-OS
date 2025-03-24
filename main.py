@@ -1,7 +1,7 @@
 from real_machine import RealMachine
-from components.real_machine_cpu import RealMachineCPU
+from components.cpu import CPU
 
-rm_cpu = RealMachineCPU()
-rm = RealMachine(rm_cpu)
+cpu = CPU()
+rm = RealMachine(cpu)
 
 rm.run();

@@ -1,4 +1,4 @@
-class RealMachineCPU:
+class CPU:
     def __init__(self):
         # registers
         self.ax = 0
