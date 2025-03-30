@@ -14,8 +14,12 @@ class VirtualMachine:
             self.multiplication()
         elif cmd == "DIV":
             self.division()
+        elif cmd == "XCHG":
+            self.exchange()
         elif cmd == "CMP":
             self.compare()
+        elif cmd == "EXIT":
+            self.exit()
             
         block, word = self.parse_args(cmd)
         if cmd.startswith("GN"):
@@ -24,6 +28,14 @@ class VirtualMachine:
             self.put_number(block, word)
         elif cmd.startswith("PD"):
             self.put_data(block, word)
+        elif cmd.startswith("GR"):
+            self.get_register(block, word)
+        elif cmd.startswith("PR"):
+            self.put_register(block, word)
+        elif cmd.startswith("GS"):
+            self.get_shared(block, word)
+        elif cmd.startswith("PS"):
+            self.put_shared(block, word)
         elif cmd.startswith("JM"):
             self.jump(block, word)
         elif cmd.startswith("JE"):
@@ -33,7 +45,7 @@ class VirtualMachine:
         elif cmd.startswith("JB"):
             self.jump_if_below(block, word)
         elif cmd.startswith("JA"):
-            self.jump_if_above(block, word)      
+            self.jump_if_above(block, word)
 
     def get_command(self):
         pass

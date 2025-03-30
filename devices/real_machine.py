@@ -3,10 +3,14 @@ class RealMachine:
         self.user_memory_size = 0
         self.supervisor_memory_size = 0
         self.shared_memory_size = 0
-        # 
+    
         self.cpu = cpu
         self.memory = [] # matrix mb? https://upload.wikimedia.org/wikipedia/en/thumb/c/c1/The_Matrix_Poster.jpg/220px-The_Matrix_Poster.jpg
         self.vm_list = [] 
+
+        # 0 - step-by-step mode is disabled
+        # 1 - step-by-step mode is enabled
+        self.operation_mode = 0
 
     # creates virtual machine for program execution
     def create_vm(self):
