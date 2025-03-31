@@ -1,5 +1,8 @@
 from utils.convertion import hex_to_dec, dec_to_hex
 
+# TODO:
+# set SF flags
+# set CD register values
 class VirtualMachine:
     def __init__(self, cpu, channel_device):
         self.cpu = cpu
@@ -71,22 +74,17 @@ class VirtualMachine:
         return cmd[2], cmd[3]
     
     # ARITHMETIC OPERATIONS
-    def addition(self):
+    def addition(self):       
         self.cpu.ax += self.cpu.bx
-        # how to set status flags?
-    
+
     def subtraction(self):
         self.cpu.ax -= self.cpu.bx
-        # how to set status flags?
 
     def multiplication(self):
         self.cpu.ax *= self.cpu.bx
-        # how to set status flags?
 
     def division(self):
         self.cpu.ax /= self.cpu.bx
-        # how to set status flags?
-        # set division from 0 interrupt
 
     def exchange(self):
         temp = self.cpu.ax
