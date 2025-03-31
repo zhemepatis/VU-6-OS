@@ -1,27 +1,42 @@
+from utils.convertion import hex_to_dec, dec_to_hex
+
 class VirtualMachine:
-    def __init__(self, cpu):
+    def __init__(self, cpu, channel_device):
         self.cpu = cpu
+        self.channel_device = channel_device
 
     # runs command
     def exec(self):
         cmd = self.get_command()
 
-        if cmd == "ADD":
+        non_parsable_cmd = 0
+        if cmd == "ADD": 
             self.addition()
         elif cmd == "SUB":
             self.subtraction()
+            non_parsable_cmd = 1
         elif cmd == "MUL":
             self.multiplication()
+            non_parsable_cmd = 1
         elif cmd == "DIV":
             self.division()
+            non_parsable_cmd = 1
         elif cmd == "XCHG":
             self.exchange()
+            non_parsable_cmd = 1
         elif cmd == "CMP":
             self.compare()
+            non_parsable_cmd = 1
         elif cmd == "EXIT":
-            self.exit()
-            
-        block, word = self.parse_args(cmd)
+            return 0
+
+        if non_parsable_cmd:
+            return 1
+                    
+        block_hex, word_hex = self.parse_args(cmd)
+        block = hex_to_dec(block_hex)
+        word = hex_to_dec(word_hex)
+
         if cmd.startswith("GN"):
             self.get_number(block, word)
         elif cmd.startswith("PN"):
@@ -47,27 +62,36 @@ class VirtualMachine:
         elif cmd.startswith("JA"):
             self.jump_if_above(block, word)
 
+        return 1
+
     def get_command(self):
         pass
 
     def parse_args(self, cmd):
-        pass
+        return cmd[2], cmd[3]
     
     # ARITHMETIC OPERATIONS
-    def addition(self, block, word):
-        pass
+    def addition(self):
+        self.cpu.ax += self.cpu.bx
+        # how to set status flags?
     
-    def subtraction(self, block, word):
-        pass
+    def subtraction(self):
+        self.cpu.ax -= self.cpu.bx
+        # how to set status flags?
 
-    def multiplication(self, block, word):
-        pass
+    def multiplication(self):
+        self.cpu.ax *= self.cpu.bx
+        # how to set status flags?
 
-    def division(self, block, word):
-        pass
+    def division(self):
+        self.cpu.ax /= self.cpu.bx
+        # how to set status flags?
+        # set division from 0 interrupt
 
     def exchange(self):
-        pass
+        temp = self.cpu.ax
+        self.cpu.ax = self.cpu.bx
+        self.cpu.bx = temp
 
     # INPUT / OUTPUT OPERATIONS
     def get_number(self, block, word):
@@ -110,7 +134,4 @@ class VirtualMachine:
         pass
 
     def jump_if_above(self, block, word):
-        pass
-
-    def exit(self):
         pass
