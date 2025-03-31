@@ -75,15 +75,31 @@ class VirtualMachine:
 
     # ARITHMETIC OPERATIONS
     def addition(self):       
+        self.cpu.reset_sf()
         self.cpu.ax += self.cpu.bx
 
+        if self.cpu.ax == 0:
+            self.cpu.sf |= 0b10
+        elif self.cpu.ax > self.cpu.MAX_WORD:
+            self.cpu.ax -= (self.cpu.ax / self.cpu.MAX_WORD) * self.cpu.MAX_WORD
+            self.cpu.sf |= 0b01
+
     def subtraction(self):
+        self.cpu.reset_sf()
         self.cpu.ax -= self.cpu.bx
 
+        if self.cpu.ax == 0:
+            self.cpu.sf |= 0b10
+        elif self.cpu.ax < self.cpu.MIN_WORD:
+            self.cpu.ax += ((self.cpu.ax / self.cpu.MAX_WORD) + 1) * self.cpu.MAX_WORD
+            self.cpu.sf |= 0b01
+
     def multiplication(self):
+        self.cpu.reset_sf()
         self.cpu.ax *= self.cpu.bx
 
     def division(self):
+        self.cpu.reset_sf()
         self.cpu.ax /= self.cpu.bx
 
     def exchange(self):

@@ -1,5 +1,8 @@
 class CPU:
     def __init__(self):
+        # const
+        self.MIN_WORD = 0
+        self.MAX_WORD = 4294967295
         # registers
         self.ax = 0
         self.bx = 0
@@ -12,3 +15,6 @@ class CPU:
         self.si = 0
         self.pi = 0
         self.ti = 0
+
+    def reset_sf(self):
+        self.sf = 0b00
