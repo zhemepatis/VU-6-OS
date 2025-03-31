@@ -8,6 +8,12 @@ class VirtualMachine:
         self.cpu = cpu
         self.channel_device = channel_device
 
+    def get_command(self):
+        pass
+
+    def parse_args(self, cmd):
+        return cmd[2], cmd[3]
+    
     # runs command
     def exec(self):
         cmd = self.get_command()
@@ -67,12 +73,6 @@ class VirtualMachine:
 
         return 1
 
-    def get_command(self):
-        pass
-
-    def parse_args(self, cmd):
-        return cmd[2], cmd[3]
-    
     # ARITHMETIC OPERATIONS
     def addition(self):       
         self.cpu.ax += self.cpu.bx
