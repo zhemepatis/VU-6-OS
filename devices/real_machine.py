@@ -13,7 +13,6 @@ class RealMachine:
         self.vm_list = [] 
 
         #inicialize free and occupied user blocks
-
         self.free_blocks = list(range(self.user_memory_start, self.shared_memory_start)) #blocks from 0 to 67 (or 0 to 43 in hex)
         random.shuffle(self.free_blocks)
         self.occupied_blocks = []
