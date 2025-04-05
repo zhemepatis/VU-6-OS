@@ -16,8 +16,17 @@ class CPU:
         self.pi = 0
         self.ti = 10
 
-    def reset_sf(self):
-        self.sf = 0b00
+    def reset_sf_register(self):
+        self.sf ^= 0b011
+
+    def set_zero_flag(self):
+        self.cpu.sf |= 0b010
+
+    def set_carry_flag(self):
+        self.cpu.sf |= 0b001
+
+    def change_operation_mode(self):
+        self.cpu.sf ^= 0b100
         
     def decrement_timer(self):
         if self.ti > 0:
