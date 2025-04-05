@@ -14,7 +14,11 @@ class CPU:
         # interrupts
         self.si = 0
         self.pi = 0
-        self.ti = 0
+        self.ti = 10
 
     def reset_sf(self):
         self.sf = 0b00
+        
+    def decrement_timer(self):
+        if self.ti > 0:
+            self.ti -= 1

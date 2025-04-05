@@ -1,18 +1,22 @@
 from utils.convertion import hex_to_dec, dec_to_hex
+from components.pagination_mechanism import PaginationMechanism
 
 # TODO:
 # set SF flags
 # set CD register values
 class VirtualMachine:
-    def __init__(self, cpu, channel_device):
+    def __init__(self, cpu, memory, ptr):
         self.cpu = cpu
+        self.memory = memory
         self.channel_device = channel_device
-
-    def get_command(self):
-        pass
+        self.ptr = ptr
+        self.pagination = PaginationMechanism(ptr, memory)
 
     def parse_args(self, cmd):
         return cmd[2], cmd[3]
+      
+    def get_command(self):
+        pass
     
     # runs command
     def exec(self):
