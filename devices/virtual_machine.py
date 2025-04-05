@@ -28,27 +28,35 @@ class VirtualMachine:
             valid_cmd = self.handle_parsable(cmd, block, word)
 
         if not valid_cmd:
-            pass # TODO: set interrupt
+            self.cpu.set_invalid_operation()
     
     def handle_non_parsable(self, cmd):
         if cmd == "ADD": 
             self.addition()
             return True
-        elif cmd == "SUB":
+        
+        if cmd == "SUB":
             self.subtraction()
             return True
-        elif cmd == "MUL":
+        
+        if cmd == "MUL":
             self.multiplication()
             return True
-        elif cmd == "DIV":
+        
+        if cmd == "DIV":
             self.division()
             return True
-        elif cmd == "XCHG":
+        
+        if cmd == "XCHG":
             self.exchange()
             return True
-        elif cmd == "CMP":
+        
+        if cmd == "CMP":
             self.compare()
-        elif cmd == "EXIT": # TODO: handle!
+            return True
+
+        if cmd == "EXIT":
+            self.exit()
             return True
         
         return False
@@ -57,37 +65,48 @@ class VirtualMachine:
         if cmd.startswith("GN"):
             self.get_number(block, word)
             return True
-        elif cmd.startswith("PN"):
+        
+        if cmd.startswith("PN"):
             self.put_number(block, word)
             return True
-        elif cmd.startswith("PD"):
+        
+        if cmd.startswith("PD"):
             self.put_data(block, word)
             return True
-        elif cmd.startswith("GR"):
+        
+        if cmd.startswith("GR"):
             self.get_register(block, word)
             return True
-        elif cmd.startswith("PR"):
+        
+        if cmd.startswith("PR"):
             self.put_register(block, word)
             return True
-        elif cmd.startswith("GS"):
+        
+        if cmd.startswith("GS"):
             self.get_shared(block, word)
             return True
-        elif cmd.startswith("PS"):
+        
+        if cmd.startswith("PS"):
             self.put_shared(block, word)
             return True
-        elif cmd.startswith("JM"):
+        
+        if cmd.startswith("JM"):
             self.jump(block, word)
             return True
-        elif cmd.startswith("JE"):
+        
+        if cmd.startswith("JE"):
             self.jump_if_equal(block, word)
-            return True   
-        elif cmd.startswith("JN"):
+            return True
+        
+        if cmd.startswith("JN"):
             self.jump_if_not_equal(block, word)
             return True
-        elif cmd.startswith("JB"):
+        
+        if cmd.startswith("JB"):
             self.jump_if_below(block, word)
             return True
-        elif cmd.startswith("JA"):
+        
+        if cmd.startswith("JA"):
             self.jump_if_above(block, word)
             return True
         
@@ -99,25 +118,47 @@ class VirtualMachine:
 
         if self.cpu.ax == 0:
             self.cpu.set_zero_flag()
-        elif self.cpu.ax > self.cpu.MAX_WORD:
+            return
+        
+        if self.cpu.ax > self.cpu.MAX_WORD:
             self.cpu.ax -= (self.cpu.ax / self.cpu.MAX_WORD) * self.cpu.MAX_WORD
             self.cpu.set_carry_flag()
+            return
 
     def subtraction(self, set_ax = True):
         self.cpu.ax -= self.cpu.bx
 
         if self.cpu.ax == 0:
             self.cpu.set_zero_flag()
-        elif self.cpu.ax < self.cpu.MIN_WORD:
+            return
+        
+        if self.cpu.ax < self.cpu.MIN_WORD:
             if set_ax: 
                 self.cpu.ax += ((self.cpu.ax / self.cpu.MAX_WORD) + 1) * self.cpu.MAX_WORD
             self.cpu.set_carry_flag()
+            return
 
     def multiplication(self):
         self.cpu.ax *= self.cpu.bx
 
+        if self.cpu.ax == 0:
+            self.cpu.set_zero_flag()
+            return
+        
+        if (self.cpu.ax >> 16) ^ 0xFFFF == 0:
+            self.set_carry_flag()
+            return 
+
     def division(self):
         self.cpu.ax /= self.cpu.bx
+
+        if self.cpu.bx == 0:
+            self.cpu.set_division_by_zero()
+            return
+
+        elif self.cpu.ax == 0:
+            self.cpu.set_zero_flag()
+            return
 
     def exchange(self):
         temp = self.cpu.ax
@@ -126,13 +167,16 @@ class VirtualMachine:
 
     # INPUT / OUTPUT OPERATIONS
     def get_number(self, block, word):
-        pass
+        self.cpu.set_get_number()
+        # TODO:
 
     def put_number(self, block, word):
-        pass
+        self.cpu.set_put_number()
+        # TODO:
 
     def put_data(self, block, word):
-        pass
+        self.cpu.set_put_data()
+        # TODO:
 
     # DATA OPERATIONS
     def get_register(self, block, word):
@@ -166,3 +210,6 @@ class VirtualMachine:
 
     def jump_if_above(self, block, word):
         pass
+
+    def exit(self):
+        self.cpu.set_exit()
