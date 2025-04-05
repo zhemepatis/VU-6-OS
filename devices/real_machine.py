@@ -1,4 +1,5 @@
 from devices.virtual_machine import VirtualMachine
+from components.channel_device import ChannelDevice
 import random
 
 class RealMachine:
@@ -53,19 +54,24 @@ class RealMachine:
     # checks whether interrupt is required
     # if yes, handles it
     def exec_interrupt(self):
-        # cpu.ti += 1
-        # if cpu.ti == 10:
-        #     cpu.ti = 0
-        pass
-
+        if self.cpu.ti == 0:
+            print("Timer interrupt triggered!")
+            self.cpu.ti = 10
+        if self.cpu.pi > 0:
+            print(f"Program interrupt triggered: PI = {self.cpu.pi}")
+            self.cpu.pi = 0
+        if self.cpu.si > 0:
+            print(f"Supervisor interrupt triggered: SI = {self.cpu.si}")
+            self.cpu.si = 0
+    
     def test_interrupt(self):
         pass
 
     # runs virtual machines 
     # executes interrupts
     def run(self):
-        # while ...:
-        #     vm = create_vm();
-        #     vm.exec(cpu, );
-        for vm in self.vm_list:
-            vm.exec()
+        while True:
+            for vm in self.vm_list:
+                vm.exec()
+                self.cpu.decrement_timer()
+                self.exec_interrupt()
