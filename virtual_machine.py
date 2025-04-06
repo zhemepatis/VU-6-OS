@@ -1,14 +1,8 @@
 from utils.convertion import hex_str_to_int
-from components.pagination_mechanism import PaginationMechanism
 
 class VirtualMachine:
-    def __init__(self, cpu, channel_device, memory, ptr):
+    def __init__(self, cpu):
         self.cpu = cpu
-        self.channel_device = channel_device
-        # memory
-        self.ptr = ptr
-        self.memory = memory
-        self.pagination = PaginationMechanism(ptr, memory)
 
     def parse_args(self, cmd):
         return cmd[2], cmd[3]

@@ -1,12 +1,13 @@
 class ChannelDevice:
-    def __init__(self, pagination):
+    def __init__(self, cpu, memory):
         # registers
         self.SB = None  # Source Block
         self.DB = None  # Destination Block
         self.ST = None  # Source Type
         self.DT = None  # Destination Type
         # other
-        self.pagination = pagination
+        self.cpu = cpu
+        self.memory = memory
     
     def transfer_data(self, SB, DB, ST, DT):
         self.SB = SB
