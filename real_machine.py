@@ -3,19 +3,24 @@ from components.channel_device import ChannelDevice
 import random
 
 class RealMachine:
-    def __init__(self, cpu):
+    def __init__(self, cpu, pagination = None, channel_device = None, memory = None):
+        # components
+        self.cpu = cpu
+        self.pagination = pagination
+        self.channel_device = channel_device
+
+        self.memory = [[0] * 16 for _ in range(86)] #full memory - in decimal - 86 blocks with 16 words each
         self.user_memory_start = 0x00
         self.shared_memory_start = 0x44 #68 decimal
         self.supervisor_memory_start = 0x46 #70 decimal
-        
-        self.cpu = cpu
-        self.memory = [[0] * 16 for _ in range(86)] #full memory - in decimal - 86 blocks with 16 words each
-        self.vm_list = [] 
 
         #inicialize free and occupied user blocks
         self.free_blocks = list(range(self.user_memory_start, self.shared_memory_start)) #blocks from 0 to 67 (or 0 to 43 in hex)
         random.shuffle(self.free_blocks)
         self.occupied_blocks = []
+
+        # other
+        self.vm_list = [] 
 
     # creates virtual machine for program execution
     def create_vm(self):

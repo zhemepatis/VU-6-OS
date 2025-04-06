@@ -1,4 +1,4 @@
-from utils.convertion import hex_to_dec, dec_to_hex
+from utils.convertion import hex_str_to_int
 from components.pagination_mechanism import PaginationMechanism
 
 class VirtualMachine:
@@ -12,19 +12,16 @@ class VirtualMachine:
 
     def parse_args(self, cmd):
         return cmd[2], cmd[3]
-      
-    def get_command(self):
-        pass
     
     def exec(self, cmd):
-        # cmd = self.get_command()
+        cmd = self.get_command()
         self.cpu.reset_sf_register()
 
         valid_cmd = self.handle_non_parsable(cmd)
         if not valid_cmd:
             block_hex, word_hex = self.parse_args(cmd)
-            block = hex_to_dec(block_hex)
-            word = hex_to_dec(word_hex)
+            block = hex_str_to_int(block_hex)
+            word = hex_str_to_int(word_hex)
 
             valid_cmd = self.handle_parsable(cmd, block, word)
 
@@ -61,7 +58,7 @@ class VirtualMachine:
             return True
         
         return False
-        
+    
     def handle_parsable(self, cmd, block, word):
         if cmd.startswith("GN"):
             self.cpu.get_number(block, word)

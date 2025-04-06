@@ -1,5 +1,5 @@
-def hex_to_dec(hex):
-    pass
+def hex_str_to_int(str):
+    return int(str, 16)
 
-def dec_to_hex(dec):
+def int_to_hex_str(str):
     pass

@@ -1,34 +1,15 @@
-# from devices.real_machine import RealMachine
-# from components.cpu import CPU
-
-# cpu = CPU()
-# rm = RealMachine(cpu)
-
-# rm.run()
-
-from virtual_machine import VirtualMachine
+from components.memory import Memory
+from components.channel_device import ChannelDevice
+from components.pagination_mechanism import PaginationMechanism
 from components.cpu import CPU
+from real_machine import RealMachine
 
-def print_cpu(cpu):
-    print("General use register values.")
-    print(f"AX: {hex(cpu.ax)}")
-    print(f"BX: {hex(cpu.bx)}")
-
-    print("Other register values.")
-    print(f"PTR: {hex(cpu.ptr)}")
-    print(f"SM: {hex(cpu.sm)}")
-    print(f"MODE: {hex(cpu.mode)}")
-    print(f"SF: {hex(cpu.sf)}")
-    print(f"IC: {hex(cpu.ic)}")
-
-    print("Interrupt values.")
-    print(f"SI: {hex(cpu.si)}")
-    print(f"PI: {hex(cpu.pi)}")
-    print(f"TI: {hex(cpu.ti)}")
-
+# creating real machine components
+memory = Memory()
+channel_device = ChannelDevice()
+pagination_mechanism = PaginationMechanism()
 cpu = CPU()
-vm = VirtualMachine(cpu, None, None, None)
 
-vm.exec("ADD")
-
-print_cpu(cpu)
+# creating real machine
+real_machine = RealMachine(cpu)
+real_machine.run()

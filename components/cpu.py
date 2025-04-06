@@ -15,6 +15,11 @@ class CPU:
         self.si = 0
         self.pi = 0
         self.ti = 10
+        # other
+        # self.channel_device = channel_device
+
+    def get_command(self):
+        pass
     
     # PI INTERRUPT
     def set_invalid_address(self):
@@ -171,4 +176,3 @@ class CPU:
 
     def jump_if_above(self, block, word):
         pass
-        self.set_exit()
