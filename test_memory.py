@@ -1,5 +1,5 @@
 from components.cpu import CPU
-from devices.real_machine import RealMachine
+from real_machine import RealMachine
 
 cpu = CPU()
 rm = RealMachine(cpu)

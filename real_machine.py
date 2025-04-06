@@ -1,4 +1,4 @@
-from devices.virtual_machine import VirtualMachine
+from virtual_machine import VirtualMachine
 from components.channel_device import ChannelDevice
 import random
 
