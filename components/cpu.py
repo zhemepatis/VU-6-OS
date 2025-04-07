@@ -1,5 +1,5 @@
 class CPU:
-    def __init__(self, channel_device, pagination):
+    def __init__(self):
         # const
         self.MIN_WORD = 0
         self.MAX_WORD = 4294967295
@@ -15,9 +15,15 @@ class CPU:
         self.si = 0
         self.pi = 0
         self.ti = 10
-        # other
-        self.channel_device = channel_device
+        # others
+        self.pagination = None
+        self.channel_device = None
+
+    def initialise_pagination(self, pagination):
         self.pagination = pagination
+
+    def initialise_channel_device(self, channel_device):
+        self.channel_device = channel_device
 
     def get_command(self):
         vm_block = self.ic >> 8

@@ -1,5 +1,5 @@
 class ChannelDevice:
-    def __init__(self, cpu, memory):
+    def __init__(self):
         # registers
         self.ST = None  # Source Type
         self.SB = None  # Source Block
@@ -8,7 +8,13 @@ class ChannelDevice:
         self.DB = None  # Destination Block
         self.DO = None  # Destination Offset
         # other
+        self.cpu = None
+        self.memory = None
+
+    def initialise_cpu(self, cpu):
         self.cpu = cpu
+
+    def initialise_pagination(self, memory):
         self.memory = memory
 
     def exchange(self):
