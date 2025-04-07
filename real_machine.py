@@ -1,22 +1,19 @@
 from virtual_machine import VirtualMachine
 
 class RealMachine:
-    def __init__(self, cpu, pagination = None, channel_device = None, memory = None):
+    def __init__(self, cpu, memory, pagination, channel_device):
         # components
         self.cpu = cpu
+        self.memory = memory
         self.pagination = pagination
         self.channel_device = channel_device
         # other
-        self.curr_vm = None
         self.vm_list = []
 
     def create_vm(self):
         page_table_block = self.memory.allocate();
 
         vm = VirtualMachine(self.cpu, self.memory, page_table_block)
-        if vm == None:
-            self.curr_vm = vm
-
         self.vm_list.append(vm)
 
     # def test_pagination(self):
