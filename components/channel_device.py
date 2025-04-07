@@ -36,9 +36,6 @@ class ChannelDevice:
 
         if self.ST == 5:
             return self.get_from_memory(self.memory.SHARED_MEMORY_START)
-
-        if self.ST == 6:
-            return self.get_from_register()
         
     def handle_write(self, value):
         if self.ST == 1:
@@ -56,9 +53,6 @@ class ChannelDevice:
         if self.ST == 5:
             self.put_to_memory(self.memory.SHARED_MEMORY_START, value)
 
-        if self.ST == 6:
-            self.put_to_register(value)
-
     def get_from_memory(self, offset): 
         block = self.SB + offset
         word = self.SO
@@ -71,12 +65,6 @@ class ChannelDevice:
 
     def get_from_external_memory(self):
         pass
-
-    def get_from_register(self):
-        return self.cpu.ax
-
-    def put_to_register(self, value):
-        self.cpu.ax = value
 
     def get_user_input(self):
         value = input(f"Enter a number: ")

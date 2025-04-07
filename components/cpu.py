@@ -16,8 +16,12 @@ class CPU:
         self.pi = 0
         self.ti = 10
         # others
+        self.memory = None
         self.pagination = None
         self.channel_device = None
+
+    def initialise_memory(self, memory):
+        self.memory = memory
 
     def initialise_pagination(self, pagination):
         self.pagination = pagination
@@ -29,8 +33,8 @@ class CPU:
         vm_block = self.ic >> 8
         vm_word = (vm_block << 8) ^ self.ic
         block, word = self.pagination.convert_address(vm_block, vm_word)
-
-        # TODO: where to put cmd?
+        
+        return self.memory.memory[block][word]
     
     # PI INTERRUPT
     def set_invalid_address(self):
@@ -63,12 +67,6 @@ class CPU:
 
     def set_get_shared(self):
         self.si = 0x6
-
-    def set_get_register(self):
-        self.si = 0x7
-
-    def set_put_register(self):
-        self.si = 0x8
 
     # TI INTERRUPT
     def decrement_timer(self):

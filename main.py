@@ -13,6 +13,7 @@ cpu = CPU()
 # initialising commmunication between components
 cpu.initialise_channel_device(channel_device)
 cpu.initialise_pagination(pagination)
+cpu.initialise_memory(memory)
 
 pagination.initialise_cpu(cpu)
 

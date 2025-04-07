@@ -11,9 +11,10 @@ class RealMachine:
         self.vm_list = []
 
     def create_vm(self):
-        page_table_block = self.memory.allocate();
+        ptr = self.memory.allocate();
+        self.cpu.ptr = ptr
 
-        vm = VirtualMachine(self.cpu, self.memory, page_table_block)
+        vm = VirtualMachine(self.cpu)
         self.vm_list.append(vm)
 
     # def test_pagination(self):
@@ -43,7 +44,4 @@ class RealMachine:
         pass
 
     def run(self):
-        while True:
-            self.curr_vm.exec()
-            self.cpu.decrement_timer()
-            self.exec_interrupt()
+        self.create_vm()

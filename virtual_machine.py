@@ -8,7 +8,7 @@ class VirtualMachine:
         return cmd[2], cmd[3]
     
     def exec(self, cmd):
-        cmd = self.get_command()
+        cmd = self.cpu.get_command()
         self.cpu.reset_sf_register()
 
         valid_cmd = self.handle_non_parsable(cmd)
