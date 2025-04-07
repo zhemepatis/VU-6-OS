@@ -11,6 +11,7 @@ class ChannelDevice:
         self.cpu = cpu
         self.memory = memory
     
+    # TODO: delete?
     def transfer_data(self, SB, DB, ST, DT):
         self.SB = SB
         self.DB = DB
@@ -85,14 +86,3 @@ class ChannelDevice:
 
     def print_value(self, value):
         print(value)
-
-    def put_data(self, block, word):
-        print("Data output starting from Block {block}, Word {word}:")
-        for i in range(10):
-            current_word = word + i
-            if current_word >= len(self.memory.memory[block]):
-                break
-            if self.memory.memory[block][current_word] == ord('$'):
-                break
-            print(self.memory.memory[block][current_word], end=" ")
-        print()

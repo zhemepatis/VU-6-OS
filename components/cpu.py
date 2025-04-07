@@ -54,6 +54,12 @@ class CPU:
     def set_get_shared(self):
         self.si = 0x6
 
+    def set_get_register(self):
+        self.si = 0x7
+
+    def set_put_register(self):
+        self.si = 0x8
+
     # TI INTERRUPT
     def decrement_timer(self):
         if self.ti > 0:
@@ -127,36 +133,103 @@ class CPU:
         self.bx = temp
 
     # INPUT / OUTPUT OPERATIONS
-    def get_number(self, block, word):
+    def get_number(self, vm_block, vm_word):
+        block, word = self.pagination.convert_address(vm_block, vm_word)
+
+        # source - keyboard input
+        self.channel_device.ST = 4
+        # destination - user memory
+        self.channel_device.DB = block
+        self.channel_device.DO = word
+        self.channel_device.DT = 1
+
         self.set_get_number()
-        # TODO:
 
-    def put_number(self, block, word):
+    def put_number(self, vm_block, vm_word):
+        block, word = self.pagination.convert_address(vm_block, vm_word)
+
+        # source - user memory
+        self.channel_device.ST = 1
+        self.channel_device.SB = block
+        self.channel_device.SO = word
+        # destination - monitor
+        self.channel_device.DT = 4
+
         self.set_put_number()
-        # TODO:
 
-    def put_data(self, block, word):
-        self.set_put_data()
+    # TODO: move?
+    # def put_data(self, block, word):
+    #     print("Data output starting from Block {block}, Word {word}:")
+    #     for i in range(10):
+    #         current_word = word + i
+    #         if current_word >= len(self.memory.memory[block]):
+    #             break
+    #         if self.memory.memory[block][current_word] == ord('$'):
+    #             break
+    #         print(self.memory.memory[block][current_word], end=" ")
+    #     print()
+
+    def put_data(self, vm_block, vm_word):
+        # block, word = self.pagination.convert_address(vm_block, vm_word)
+
+        # for 
+
+        # self.channel_device.ST = block
+        # self.channel_device.SO = word
+        # self.channel_device.DT = 4
+
+        # self.set_put_data()
         # TODO:
+        pass
 
     # DATA OPERATIONS
-    def get_register(self, block, word):
-        # TODO:
-        # value = self.ax
-        # self.pagination.put_value(block, word, value)
-        pass
+    def get_register(self, vm_block, vm_word):
+        block, word = self.pagination.convert_address(vm_block, vm_word)
 
-    def put_register(self, block, word):
-        # TODO:
-        # value = self.pagination.get_value(block, word, value)
-        # self.ax = value
-        pass
+        # source - AX register
+        self.channel_device.ST = 6
+        # destination - user memory
+        self.channel_device.DT = 1
+        self.channel_device.DB = block
+        self.channel_device.DO = word
 
-    def get_shared(self, block, word):
-        pass
+        self.set_get_register()
 
-    def put_shared(self, block, word):
-        pass
+    def put_register(self, vm_block, vm_word):
+        block, word = self.pagination.convert_address(vm_block, vm_word)
+
+        # source - user memory
+        self.channel_device.ST = 1
+        self.channel_device.SB = block
+        self.channel_device.SO = word
+        # destination - AX register
+        self.channel_device.DT = 6
+
+        self.set_put_register()
+
+    def get_shared(self, vm_block, vm_word):
+        block, word = self.pagination.convert_address(vm_block, vm_word)
+
+        # source - shared memory
+        self.channel_device.ST = 5
+        self.channel_device.SB = block
+        self.channel_device.SO = word
+        # destination - AX register
+        self.channel_device.DT = 6
+
+        self.set_get_shared()
+
+    def put_shared(self, vm_block, vm_word):
+        block, word = self.pagination.convert_address(vm_block, vm_word)
+
+        # source - AX register
+        self.channel_device.ST = 6
+        # destination - shared memory
+        self.channel_device.DT = 5
+        self.channel_device.DB = block
+        self.channel_device.DO = word
+
+        self.set_put_shared()
 
     # LOGICAL OPERATIONS
     def compare(self):
