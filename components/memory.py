@@ -17,6 +17,7 @@ class Memory:
         # memory list
         self.memory = [[0] * 16 for _ in range(86)] # full memory - in decimal - 86 blocks with 16 words each
 
+    # TODO: where did PTR go?
     def allocate(self):
         if len(self.VM_REQUIRED_BLOCK_NUM):
             raise Exception ("Not enough memory to create a new VM") # TODO: change to interrupt

@@ -20,7 +20,11 @@ class CPU:
         self.pagination = pagination
 
     def get_command(self):
-        pass
+        vm_block = self.ic >> 8
+        vm_word = (vm_block << 8) ^ self.ic
+        block, word = self.pagination.convert_address(vm_block, vm_word)
+
+        # TODO: where to put cmd?
     
     # PI INTERRUPT
     def set_invalid_address(self):
@@ -70,14 +74,27 @@ class CPU:
         self.sf >>= 2
         self.sf <<= 2
 
+    def get_zero_flag(self):
+        return (self.sf & 0x2) >> 1 # 0b010
+
     def set_zero_flag(self):
         self.sf |= 0x2 # 0b010
+
+    def get_carry_flag(self):
+        return (self.sf & 0x1) # 0b010
 
     def set_carry_flag(self):
         self.sf |= 0x1 # 0b001
 
+    def get_operation_mode_flag(self):
+        return self.sf >> 2
+
     def change_operation_mode_flag(self):
         self.sf ^= 0x3 # 0b100
+
+    # IC REGISTER
+    def set_ic_register(self, vm_block, vm_word):
+        self.ic = vm_block << 8 | vm_word
 
     # ARITHMETIC OPERATIONS
     def addition(self):
@@ -157,30 +174,17 @@ class CPU:
 
         self.set_put_number()
 
-    # TODO: move?
-    # def put_data(self, block, word):
-    #     print("Data output starting from Block {block}, Word {word}:")
-    #     for i in range(10):
-    #         current_word = word + i
-    #         if current_word >= len(self.memory.memory[block]):
-    #             break
-    #         if self.memory.memory[block][current_word] == ord('$'):
-    #             break
-    #         print(self.memory.memory[block][current_word], end=" ")
-    #     print()
-
     def put_data(self, vm_block, vm_word):
-        # block, word = self.pagination.convert_address(vm_block, vm_word)
+        block, word = self.pagination.convert_address(vm_block, vm_word)
 
-        # for 
+        # source - user memory
+        self.channel_device.ST = 1
+        self.channel_device.SB = block
+        self.channel_device.SO = word
+        # destination - monitor
+        self.channel_device.DT = 4
 
-        # self.channel_device.ST = block
-        # self.channel_device.SO = word
-        # self.channel_device.DT = 4
-
-        # self.set_put_data()
-        # TODO:
-        pass
+        self.set_put_data()
 
     # DATA OPERATIONS
     def get_register(self, vm_block, vm_word):
@@ -236,17 +240,30 @@ class CPU:
         self.subtraction(False)
 
     # CONTROL MANAGEMENT OPERATIONS
-    def jump(self, block, word):
-        pass
+    def jump(self, vm_block, vm_word):
+        self.set_ic_register(vm_block, vm_word)
 
-    def jump_if_equal(self, block, word):
-        pass
+    def jump_if_equal(self, vm_block, vm_word):
+        zero_flag = self.get_zero_flag()
+        
+        if zero_flag == 1:
+            self.set_ic_register(vm_block, vm_word)
 
-    def jump_if_not_equal(self, block, word):
-        pass
+    def jump_if_not_equal(self, vm_block, vm_word):
+        zero_flag = self.get_zero_flag()
 
-    def jump_if_below(self, block, word):
-        pass
+        if zero_flag == 0:
+            self.set_ic_register(vm_block, vm_word)
 
-    def jump_if_above(self, block, word):
-        pass
+    def jump_if_below(self, vm_block, vm_word):
+        carry_flag = self.get_carry_flag()
+
+        if carry_flag == 1:
+            self.set_ic_register(vm_block, vm_word)
+
+    def jump_if_above(self, vm_block, vm_word):
+        zero_flag = self.get_zero_flag()
+        carry_flag = self.get_carry_flag()
+
+        if zero_flag == 0 and carry_flag == 0:
+            self.set_ic_register(vm_block, vm_word)

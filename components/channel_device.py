@@ -1,23 +1,15 @@
 class ChannelDevice:
     def __init__(self, cpu, memory):
         # registers
-        self.SB = None  # Source Block
-        self.DB = None  # Destination Block
-        self.SO = None  # Source Offset
-        self.DO = None  # Destination Offset
         self.ST = None  # Source Type
+        self.SB = None  # Source Block
+        self.SO = None  # Source Offset
         self.DT = None  # Destination Type
+        self.DB = None  # Destination Block
+        self.DO = None  # Destination Offset
         # other
         self.cpu = cpu
         self.memory = memory
-    
-    # TODO: delete?
-    def transfer_data(self, SB, DB, ST, DT):
-        self.SB = SB
-        self.DB = DB
-        self.ST = ST
-        self.DT = DT
-        print(f"Data transfer initiated: Source ({SB}, {ST}) -> Destination ({DB}, {DT})")
 
     def exchange(self):
         value = self.handle_read()
@@ -86,3 +78,15 @@ class ChannelDevice:
 
     def print_value(self, value):
         print(value)
+
+    # TODO: move?
+    # def put_data(self, block, word):
+    #     print("Data output starting from Block {block}, Word {word}:")
+    #     for i in range(10):
+    #         current_word = word + i
+    #         if current_word >= len(self.memory.memory[block]):
+    #             break
+    #         if self.memory.memory[block][current_word] == ord('$'):
+    #             break
+    #         print(self.memory.memory[block][current_word], end=" ")
+    #     print()
