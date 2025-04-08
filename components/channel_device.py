@@ -62,16 +62,19 @@ class ChannelDevice:
         block = self.SB + offset
         word = self.DO
         self.memory.memory[block][word] = value
-
-    def get_from_external_memory(self):
-        pass
-
+        
     def get_user_input(self):
         value = input(f"Enter a number: ")
         return int(value)
 
     def print_value(self, value):
         print(value)
+
+    def load_program_to_supervisor_memory(self, name):
+        pass
+
+    def load_program_to_user_memory(self):
+        pass
 
     # TODO: move?
     # def put_data(self, block, word):

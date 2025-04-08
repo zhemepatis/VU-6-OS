@@ -7,7 +7,7 @@ class VirtualMachine:
     def parse_args(self, cmd):
         return cmd[2], cmd[3]
     
-    def exec(self, cmd):
+    def exec(self):
         cmd = self.cpu.get_command()
         self.cpu.reset_sf_register()
 

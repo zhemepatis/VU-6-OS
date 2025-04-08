@@ -1,5 +1,5 @@
 from virtual_machine import VirtualMachine
-from utils.interface import Interface
+from processes.interface import Interface
 
 class RealMachine:
     def __init__(self, cpu, memory, pagination, channel_device):
@@ -46,59 +46,73 @@ class RealMachine:
         pass
 
     def run(self):
+        run_vm = False
+
         while True:
-            self.interface.main_menu()
+            if not run_vm:
+                choice = self.interface.main_menu()
+                run_vm = self.handle_main_menu(choice)
+                continue
+            
+            while run_vm:
+                next_cmd = True
+                if self.cpu.get_operation_mode_flag == 1:
+                    choice = self.interface.step_by_step_menu()
+                    next_cmd = self.handle_step_by_step_menu(choice)
 
-            # if choice == 1:
-            #     print("\n--- Creating VM and testing memory allocation ---")
-            #     rm.create_vm()
+                    if not next_cmd:
+                        continue
 
-            #     vm = rm.vm_list[0]
-            #     print("Select execution mode:")
-            #     print("1. Run program automatically")
-            #     print("2. Run program step-by-step")
-            #     execution_mode = input("Choose an option: ")
-
-            #     if execution_mode == "1":
-            #         vm.exec()
-            #     elif execution_mode == "2":
-            #         step_by_step_menu(vm)
-
-            # elif choice == 2:
-            #     current_mode = "Supervisor" if cpu.mode == 0 else "User"
-            #     print(f"Current operation mode: {current_mode}")
-            #     new_mode = input("Enter new mode (Supervisor/User): ")
-            #     cpu.mode = 0 if new_mode.lower() == "supervisor" else 1
-
-            # elif choice == 3:
-            #     print("Exiting system. Goodbye!")
-            #     break
-
-            # else:
-            #     print("Invalid choice. Try again!")
+                if next_cmd:
+                    self.vm_list[0].exec()
+                    self.exec_interrupt()
 
     def handle_main_menu(self, choice):
         if choice == 1:
-            return
+            self.load_program()
+            return True
         
         if choice == 2:
-            return
-        
+            self.change_mode()
+            return False
+
         if choice == 3:
-            return
+            self.exit()
+            return False
+        
+        self.interface.print_invalid_option()
+        return False
+
+    def load_program(self):
+        name = input("Enter program name: ")
+        self.channel_device.load_program_to_supervisor_memory(name)
+        self.channel_device.load_program_to_user_memory()
+        self.create_vm()
+
+    def change_mode(self):
+        self.cpu.change_operation_mode_flag()
+
+    def exit(self):
+        print("Exiting system. Thank you, come again!")
+        exit(0)
         
     def handle_step_by_step_menu(self, choice):
         if choice == 1:
-            return
+            return True
         
         if choice == 2:
-            return
+            self.interface.print_cpu()
+            return False
         
         if choice == 3:
-            return
+            self.interface.print_real_memory(self.memory)
+            return False
         
         if choice == 4:
-            return
+            self.interface.print_vm_memory(self.memory)
+            return False
         
         if choice == 5:
-            return
+            return False
+        
+        self.interface.print_invalid_option()

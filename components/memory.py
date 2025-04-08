@@ -31,22 +31,5 @@ class Memory:
         print(f" VM created with PTR = {page_table_block:02X}")
         return page_table_block
     
-    # def create_vm(self):
-    #     #Allocates memory for a new VM
-    #     required_blocks = 0x11 #17 decimal
-    #     if len(self.free_blocks)<required_blocks:
-    #         raise Exception ("Not enough memory to create a new VM")
-        
-    #     allocated_blocks = [self.free_blocks.pop() for _ in range(required_blocks)] #pop 17 blocks from free blocks list
-    #     self.occupied_blocks.extend(allocated_blocks) #add these blocks to the occupied list
-
-    #     page_table_block = allocated_blocks[0]
-    #     vm_data_blocks = allocated_blocks[1:]
-        
-    #     for i in range(16):
-    #         self.memory[page_table_block][i] = vm_data_blocks[i]  
-
-    #     new_vm = VirtualMachine(self.cpu, self.memory, page_table_block)
-    #     self.vm_list.append(new_vm)
-
-    #     print(f" VM {len(self.vm_list)} created with PTR = {page_table_block:02X}")
+    def deallocate(self):
+        pass

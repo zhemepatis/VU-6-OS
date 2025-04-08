@@ -94,7 +94,7 @@ class CPU:
         return self.sf >> 2
 
     def change_operation_mode_flag(self):
-        self.sf ^= 0x3 # 0b100
+        self.sf ^= 0x4 # 0b100 
 
     # IC REGISTER
     def set_ic_register(self, vm_block, vm_word):
