@@ -16,6 +16,7 @@ cpu.initialise_pagination(pagination)
 cpu.initialise_memory(memory)
 
 pagination.initialise_cpu(cpu)
+pagination.initialise_memory(memory)
 
 channel_device.initialise_cpu(cpu)
 channel_device.initialise_pagination(pagination)

@@ -19,18 +19,6 @@ class RealMachine:
         vm = VirtualMachine(self.cpu)
         self.vm_list.append(vm)
 
-    # def test_pagination(self):
-    #     """Test the address translation for each created VM."""
-    #     for idx, vm in enumerate(self.vm_list):
-    #         # Assume we're testing a virtual address (2, 5)
-    #         real_addr = vm.pagination.convert_address(2, 5)
-    #         print(f"VM {idx+1} (PTR = {vm.ptr:02X}) -> Virtual(2,5) translates to real address: Block {real_addr[0]:02X}, Word {real_addr[1]:02X}")
-    #     # Optionally print the user memory blocks (0-67):
-    #     print("User memory blocks state:")
-    #     for i in range(self.shared_memory_start):
-    #         formatted_block = " ".join(f"{word:02X}" for word in self.memory[i])
-    #         print(f"Block {i:02X}: {formatted_block}")
-
     def exec_interrupt(self):
         if self.cpu.ti == 0:
             print("Timer interrupt triggered!")
@@ -56,7 +44,7 @@ class RealMachine:
             
             while run_vm:
                 next_cmd = True
-                if self.cpu.get_operation_mode_flag == 1:
+                if self.cpu.get_operation_mode_flag() == 1:
                     choice = self.interface.step_by_step_menu()
                     next_cmd = self.handle_step_by_step_menu(choice)
 
@@ -102,7 +90,7 @@ class RealMachine:
             return True
         
         if choice == 2:
-            self.interface.print_cpu()
+            self.interface.print_cpu(self.cpu)
             return False
         
         if choice == 3:
