@@ -84,8 +84,9 @@ class RealMachine:
         return False
 
     def load_program(self):
-        name = input("Enter program name: ")
-        self.channel_device.load_program_to_supervisor_memory(name)
+        title = input("Enter program name: ")
+        self.channel_device.load_program_to_supervisor_memory(title)
+        self.channel_device.validate_supervisor_memory()
         self.channel_device.load_program_to_user_memory()
         self.create_vm()
 

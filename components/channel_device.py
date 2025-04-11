@@ -70,7 +70,10 @@ class ChannelDevice:
     def print_value(self, value):
         print(value)
 
-    def load_program_to_supervisor_memory(self, name):
+    def load_program_to_supervisor_memory(self, title):
+        pass
+
+    def validate_supervisor_memory(self):
         pass
 
     def load_program_to_user_memory(self):
