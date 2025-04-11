@@ -19,19 +19,24 @@ class RealMachine:
         vm = VirtualMachine(self.cpu)
         self.vm_list.append(vm)
 
+    def remove_vm(self):
+        self.interface.print_vm_exit()
+
     def exec_interrupt(self):
         if self.cpu.ti == 0:
             print("Timer interrupt triggered!")
             self.cpu.ti = 10
+
         if self.cpu.pi > 0:
             print(f"Program interrupt triggered: PI = {self.cpu.pi}")
             self.cpu.pi = 0
+
         if self.cpu.si > 0:
             print(f"Supervisor interrupt triggered: SI = {self.cpu.si}")
             self.cpu.si = 0
     
     def test_interrupt(self):
-        pass
+        return (self.cpu.pi + self.cpu.si) > 0 or self.cpu.ti == 0
 
     def run(self):
         run_vm = False
@@ -43,16 +48,18 @@ class RealMachine:
                 continue
             
             while run_vm:
-                next_cmd = True
                 if self.cpu.get_operation_mode_flag() == 1:
                     choice = self.interface.step_by_step_menu()
-                    next_cmd = self.handle_step_by_step_menu(choice)
+                    self.handle_step_by_step_menu(choice)
 
-                    if not next_cmd:
+                    if choice == 5:
+                        run_vm = False
+
+                    if choice != 1:
                         continue
 
-                if next_cmd:
-                    self.vm_list[0].exec()
+                self.vm_list[0].exec()
+                if self.test_interrupt():
                     self.exec_interrupt()
 
     def handle_main_menu(self, choice):
@@ -87,21 +94,21 @@ class RealMachine:
         
     def handle_step_by_step_menu(self, choice):
         if choice == 1:
-            return True
+            return
         
         if choice == 2:
             self.interface.print_cpu(self.cpu)
-            return False
+            return
         
         if choice == 3:
             self.interface.print_real_memory(self.memory)
-            return False
+            return
         
         if choice == 4:
-            self.interface.print_vm_memory(self.memory)
-            return False
+            self.interface.print_vm_memory(self.cpu.ptr, self.memory)
+            return
         
         if choice == 5:
-            return False
+            return
         
         self.interface.print_invalid_option()

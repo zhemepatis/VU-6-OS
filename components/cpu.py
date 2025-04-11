@@ -9,7 +9,7 @@ class CPU:
         self.ptr = 0
         self.sm = 0
         self.mode = 0
-        self.sf = 0
+        self.sf = 0x4
         self.ic = 0
         # interrupts
         self.si = 0

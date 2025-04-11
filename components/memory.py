@@ -6,6 +6,7 @@ class Memory:
         self.USER_MEMORY_START = 0x00
         self.SHARED_MEMORY_START = 0x44 # 68 decimal
         self.SUPERVISOR_MEMORY_START = 0x46 # 70 decimal
+        self.MEMORY_END = 0x55
         self.BLOCK_LENGTH = 0x1F # 16 decimal 
         self.VM_REQUIRED_BLOCK_NUM = 0x11 # 17 decimal
         # lists for block occupation tracking
@@ -13,7 +14,7 @@ class Memory:
         random.shuffle(self.free_blocks)
         self.occupied_blocks = []
         # memory list
-        self.memory = [[0] * self.VM_REQUIRED_BLOCK_NUM for _ in range(86)] # full memory - in decimal - 86 blocks with 16 words each
+        self.memory = [[0] * (self.VM_REQUIRED_BLOCK_NUM - 1) for _ in range(86)] # full memory - in decimal - 86 blocks with 16 words each
 
     def allocate(self):
         if len(self.free_blocks) < self.VM_REQUIRED_BLOCK_NUM:
@@ -28,7 +29,6 @@ class Memory:
         for i in range(self.VM_REQUIRED_BLOCK_NUM - 1):
             self.memory[page_table_block][i] = vm_data_blocks[i]
 
-        print(f" VM created with PTR = {page_table_block:02X}")
         return page_table_block
     
     def deallocate(self):
