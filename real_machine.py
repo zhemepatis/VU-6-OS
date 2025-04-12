@@ -12,32 +12,6 @@ class RealMachine:
         self.interface = Interface()
         self.vm_list = []
 
-    def create_vm(self):
-        ptr = self.memory.allocate();
-        self.cpu.ptr = ptr
-
-        vm = VirtualMachine(self.cpu)
-        self.vm_list.append(vm)
-
-    def remove_vm(self):
-        self.interface.print_vm_exit()
-
-    def exec_interrupt(self):
-        if self.cpu.ti == 0:
-            print("Timer interrupt triggered!")
-            self.cpu.ti = 10
-
-        if self.cpu.pi > 0:
-            print(f"Program interrupt triggered: PI = {self.cpu.pi}")
-            self.cpu.pi = 0
-
-        if self.cpu.si > 0:
-            print(f"Supervisor interrupt triggered: SI = {self.cpu.si}")
-            self.cpu.si = 0
-    
-    def test_interrupt(self):
-        return (self.cpu.pi + self.cpu.si) > 0 or self.cpu.ti == 0
-
     def run(self):
         run_vm = False
 
@@ -60,8 +34,9 @@ class RealMachine:
 
                 self.vm_list[0].exec()
                 if self.test_interrupt():
-                    self.exec_interrupt()
+                    run_vm = self.exec_interrupt()
 
+    # MAIN MENU
     def handle_main_menu(self, choice):
         if choice == 1:
             self.load_program()
@@ -91,9 +66,10 @@ class RealMachine:
     def exit(self):
         print("Exiting system. Thank you, come again!")
         exit(0)
-        
+    
+    # STEP-BY-STEP MENU
     def handle_step_by_step_menu(self, choice):
-        if choice == 1:
+        if choice == 1 or choice == 5:
             return
         
         if choice == 2:
@@ -108,7 +84,44 @@ class RealMachine:
             self.interface.print_vm_memory(self.cpu.ptr, self.memory)
             return
         
-        if choice == 5:
+        self.interface.print_invalid_option()
+
+    # INTERRUPTS
+    def test_interrupt(self):
+        return (self.cpu.pi + self.cpu.si) > 0 or self.cpu.ti == 0
+
+    def exec_interrupt(self):
+        if self.cpu.ti == 0:
+            print("Timer interrupt triggered!")
+            self.cpu.ti = 10
+
+        if self.cpu.pi > 0:
+            print(f"Program interrupt triggered: PI = {self.cpu.pi}")
+            self.cpu.pi = 0
+            return False
+
+        if self.cpu.si > 0:
+            print(f"Supervisor interrupt triggered: SI = {self.cpu.si}")
+            result = self.handle_si_interrupt()
+            self.cpu.si = 0
+            return result
+        
+        return True
+
+    def handle_si_interrupt(self):
+        if self.cpu.si == 4:
             return
         
-        self.interface.print_invalid_option()
+        self.channel_device.exchange()
+    
+    # OTHERS
+    def create_vm(self):
+        ptr = self.memory.allocate();
+        self.cpu.ptr = ptr
+
+        vm = VirtualMachine(self.cpu)
+        self.vm_list.append(vm)
+
+    def remove_vm(self):
+        self.interface.print_vm_exit()
+    

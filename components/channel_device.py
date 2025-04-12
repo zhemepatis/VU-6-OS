@@ -14,7 +14,7 @@ class ChannelDevice:
     def initialise_cpu(self, cpu):
         self.cpu = cpu
 
-    def initialise_pagination(self, memory):
+    def initialise_memory(self, memory):
         self.memory = memory
 
     def exchange(self):
@@ -38,20 +38,24 @@ class ChannelDevice:
             return self.get_from_memory(self.memory.SHARED_MEMORY_START)
         
     def handle_write(self, value):
-        if self.ST == 1:
+        if self.DT == 1:
             self.put_to_memory(self.memory.USER_MEMORY_START, value)
+            return
 
-        if self.ST == 2:
+        if self.DT == 2:
             self.put_to_memory(self.memory.SUPERVISOR_MEMORY_START, value)
+            return
 
-        if self.ST == 3:
+        if self.DT == 3:
             return  # TODO:
 
-        if self.ST == 4:
+        if self.DT == 4:
             self.print_value(value)
+            return
 
-        if self.ST == 5:
+        if self.DT == 5:
             self.put_to_memory(self.memory.SHARED_MEMORY_START, value)
+            return
 
     def get_from_memory(self, offset): 
         block = self.SB + offset

@@ -19,7 +19,7 @@ pagination.initialise_cpu(cpu)
 pagination.initialise_memory(memory)
 
 channel_device.initialise_cpu(cpu)
-channel_device.initialise_pagination(pagination)
+channel_device.initialise_memory(memory)
 
 # creating real machine
 real_machine = RealMachine(cpu, memory, pagination, channel_device)
