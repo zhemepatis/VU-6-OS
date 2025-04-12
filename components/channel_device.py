@@ -107,7 +107,27 @@ class ChannelDevice:
                 
 
     def validate_supervisor_memory(self):
-        pass
+        supervisor_memory = self.memory.memory[self.memory.SUPERVISOR_MEMORY_START:]
+        if not supervisor_memory or supervisor_memory[0][0] != "$AMJ":
+            raise Exception("Missing '$AMJ' in supervisor memory.")
+        if not supervisor_memory[-1][0] == "$END":
+            raise Exception("Missing '$END' in supervisor memory.")
+        
+        valid_commands = {"ADD", "SUB", "MUL", "DIV", "XCHG", "CMP", "EXIT"}
+        commands_with_args = {"GN", "PN", "PD", "GR", "PR", "GS", "PS",
+                          "JM", "JE", "JN", "JB", "JA"}
+        
+        for line in supervisor_memory[2:-1]:
+            full_command = line[0]
+            command = full_command[:2] if full_command[:2] in commands_with_args else full_command
+            args = full_command[2:] if command in commands_with_args else ""
+            
+            if command not in valid_commands and command not in commands_with_args:
+                raise Exception(f"Invalid command '{command}' found in supervisor memory.")
+            
+            if command in commands_with_args and (len(args) != 2 or not args.isalnum()):
+                raise Exception(f"Command '{command}' requires arguments.")
+        print("Supervisor memory validated successfully.")
 
     def load_program_to_user_memory(self):
         supervisor_memory_start = self.memory.SUPERVISOR_MEMORY_START
