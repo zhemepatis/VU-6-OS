@@ -31,5 +31,17 @@ class Memory:
 
         return page_table_block
     
-    def deallocate(self):
-        pass
+    def deallocate(self, ptr):
+        if ptr not in self.occupied_blocks:
+            raise Exception(f"PTR {ptr:02X} not in occupied blocks")
+        
+        #get the vm blocks from pagination table
+        vm_data_blocks = self.memory[ptr][:self.VM_REQUIRED_BLOCK_NUM-1]
+        all_blocks_to_free = [ptr] + vm_data_blocks
+
+        for block in all_blocks_to_free:
+            if block in self.occupied_blocks:
+                self.occupied_blocks.remove(block)
+                self.free_blocks.append(block)
+        
+        random.shuffle(self.free_blocks)
