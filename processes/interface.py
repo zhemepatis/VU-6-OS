@@ -71,11 +71,21 @@ class Interface:
             if i == memory.SUPERVISOR_MEMORY_START:
                 print("\nSupervisor memory:")
 
-            formatted_block = " ".join(f"{word:02X}" for word in memory.memory[i])
-            print(f"Block {i:02X}: {formatted_block}")
+            formatted_block = self.get_block_str(memory, i)
+            self.print_block(i, formatted_block)
 
     def print_vm_memory(self, ptr, memory):
-        pass
+        print("\nVM memory:")
+        for i in range(memory.BLOCK_LENGTH):
+            block_num = memory.memory[ptr][i]
+            block_str = self.get_block_str(memory, block_num)
+            self.print_block(i, block_str)
+
+    def print_block(self, block_num, block_str):
+        print(f"Block {block_num:02X}: {block_str}")
+
+    def get_block_str(self, memory, block_num): 
+        return " ".join(f"{word:02X}" for word in memory.memory[block_num])
 
     def print_invalid_option(self):
         print("Invalid choice. Try again!")

@@ -195,9 +195,12 @@ class CPU:
 
     def get_shared(self, vm_block, vm_word):
         block, word = self.pagination.convert_address(vm_block, vm_word)
+        # TODO:
         pass
+
     def put_shared(self, vm_block, vm_word):
         block, word = self.pagination.convert_address(vm_block, vm_word)
+        # TODO:
         pass
 
     # LOGICAL OPERATIONS
