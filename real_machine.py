@@ -69,7 +69,7 @@ class RealMachine:
     
     # STEP-BY-STEP MENU
     def handle_step_by_step_menu(self, choice):
-        if choice == 1 or choice == 5:
+        if choice == 1:
             return
         
         if choice == 2:
@@ -82,6 +82,10 @@ class RealMachine:
         
         if choice == 4:
             self.interface.print_vm_memory(self.cpu.ptr, self.memory)
+            return
+        
+        if choice == 5:
+            self.remove_vm()
             return
         
         self.interface.print_invalid_option()
@@ -110,9 +114,10 @@ class RealMachine:
 
     def handle_si_interrupt(self):
         if self.cpu.si == 4:
-            return
+            return False
         
         self.channel_device.exchange()
+        return True
     
     # OTHERS
     def create_vm(self):
@@ -124,4 +129,4 @@ class RealMachine:
 
     def remove_vm(self):
         self.interface.print_vm_exit()
-    
+        self.vm_list.pop(0)

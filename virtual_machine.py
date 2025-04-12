@@ -10,7 +10,7 @@ class VirtualMachine:
     def exec(self):
         cmd = self.cpu.get_command()
         self.cpu.reset_sf_register()
-        cmd = "PN00"
+        cmd = "GN54"
 
         valid_cmd = self.handle_non_parsable(cmd)
         if not valid_cmd:

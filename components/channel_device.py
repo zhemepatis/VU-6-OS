@@ -47,7 +47,7 @@ class ChannelDevice:
             return
 
         if self.DT == 3:
-            return  # TODO:
+            pass
 
         if self.DT == 4:
             self.print_value(value)
@@ -63,7 +63,7 @@ class ChannelDevice:
         return self.memory.memory[block][word]
 
     def put_to_memory(self, offset, value): 
-        block = self.SB + offset
+        block = self.DB + offset
         word = self.DO
         self.memory.memory[block][word] = value
         
