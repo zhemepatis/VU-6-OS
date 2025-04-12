@@ -33,6 +33,8 @@ class RealMachine:
                         continue
 
                 self.vm_list[0].exec()
+                self.cpu.decrement_timer()
+
                 if self.test_interrupt():
                     run_vm = self.exec_interrupt()
 

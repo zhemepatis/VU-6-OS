@@ -63,9 +63,11 @@ class CPU:
         self.si = 0x4
 
     # TI INTERRUPT
-    def decrement_timer(self):
-        if self.ti > 0:
-            self.ti -= 1
+    def decrement_timer(self, io_operation = False):
+        if io_operation:
+            self.ti = max(self.ti - 3, 0)
+        else:
+            self.ti = max(self.ti - 1, 0)
 
     # SF REGISTER
     def reset_sf_register(self):

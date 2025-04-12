@@ -30,7 +30,7 @@ class Interface:
         return self.get_menu_choice()
     
     def step_by_step_menu(self):
-        title = "Main"
+        title = "Step-by-step"
         menu = [
             "Execute next command",
             "Print CPU state",
