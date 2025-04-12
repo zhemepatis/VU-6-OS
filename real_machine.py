@@ -13,7 +13,7 @@ class RealMachine:
         self.vm_list = []
 
     def create_vm(self):
-        ptr = self.memory.allocate();
+        ptr = self.memory.allocate()
         self.cpu.ptr = ptr
 
         vm = VirtualMachine(self.cpu)

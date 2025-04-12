@@ -14,7 +14,7 @@ class ChannelDevice:
     def initialise_cpu(self, cpu):
         self.cpu = cpu
 
-    def initialise_pagination(self, memory):
+    def initialise_memory(self, memory):
         self.memory = memory
 
     def exchange(self):
@@ -70,14 +70,58 @@ class ChannelDevice:
     def print_value(self, value):
         print(value)
 
+    def read_hdd_file(self, file):
+        hdd_file = open(file, "r")
+        lines = hdd_file.readlines()
+        hdd_file.close()
+        return lines
+
     def load_program_to_supervisor_memory(self, title):
-        pass
+        lines = self.read_hdd_file("hdd.txt")
+        supervisor_memory_start = self.memory.SUPERVISOR_MEMORY_START #supervisor memory index
+        supervisor_index = 0
+        program_index = -1 #index of the lines from the file that are being copied to supervisor
+
+        for i, line in enumerate(lines):
+            if line==title:
+                program_index = i-1
+                break
+
+        program_end = False
+
+        if program_index!=-1:
+            while not program_end:
+                self.memory.memory[supervisor_memory_start][supervisor_index] = lines[program_index]
+                if lines[program_index]=="$END":
+                    program_end = True
+
+                if supervisor_index == 15: #if the first block of supervisor memory ends
+                    supervisor_index = 0
+                    supervisor_memory_start += 1
+                supervisor_index += 1
+                program_index += 1
+                
 
     def validate_supervisor_memory(self):
         pass
 
     def load_program_to_user_memory(self):
-        pass
+        supervisor_memory_start = self.memory.SUPERVISOR_MEMORY_START
+        vm_memory_pagination_table = self.cpu.ptr
+        index = 0
+        end_of_program = False
+
+        while not end_of_program:
+            memory_block = self.memory.memory[vm_memory_pagination_table][index]
+            value = self.get_from_memory(supervisor_memory_start+index)
+            self.put_to_memory(memory_block, value)
+
+            if value=="$END":
+                end_of_program = True
+            
+            index += 1
+
+            
 
     # TODO: move?
     # def put_data(self, block, word):
