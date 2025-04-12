@@ -16,9 +16,8 @@ class VirtualMachine:
             block_hex, word_hex = self.parse_args(cmd)
             block = hex_str_to_int(block_hex)
             word = hex_str_to_int(word_hex)
-
             valid_cmd = self.handle_parsable(cmd, block, word)
-
+        
         if not valid_cmd:
             self.cpu.set_invalid_operation()
     

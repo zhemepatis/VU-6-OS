@@ -12,5 +12,5 @@ class PaginationMechanism:
 
     # converts virtual memory address to real memory address
     def convert_address(self, virtual_block, word):
-        real_block = self.memory[self.cpu.ptr][virtual_block]  #finds the block number using ptr
+        real_block = self.memory.memory[self.cpu.ptr][virtual_block]  #finds the block number using ptr
         return (real_block, word) #the word number remains unchanged 

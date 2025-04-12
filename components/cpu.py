@@ -4,12 +4,12 @@ class CPU:
         self.MIN_WORD = 0
         self.MAX_WORD = 4294967295
         # registers
-        self.ax = 0
+        self.ax = 56
         self.bx = 0
         self.ptr = 0
         self.sm = 0
         self.mode = 0
-        self.sf = 0
+        self.sf = 0x4
         self.ic = 0
         # interrupts
         self.si = 0
@@ -62,16 +62,12 @@ class CPU:
     def set_exit(self):
         self.si = 0x4
 
-    def set_put_shared(self):
-        self.si = 0x5
-
-    def set_get_shared(self):
-        self.si = 0x6
-
     # TI INTERRUPT
-    def decrement_timer(self):
-        if self.ti > 0:
-            self.ti -= 1
+    def decrement_timer(self, io_operation = False):
+        if io_operation:
+            self.ti = max(self.ti - 3, 0)
+        else:
+            self.ti = max(self.ti - 1, 0)
 
     # SF REGISTER
     def reset_sf_register(self):
@@ -193,51 +189,21 @@ class CPU:
     # DATA OPERATIONS
     def get_register(self, vm_block, vm_word):
         block, word = self.pagination.convert_address(vm_block, vm_word)
-
-        # source - AX register
-        self.channel_device.ST = 6
-        # destination - user memory
-        self.channel_device.DT = 1
-        self.channel_device.DB = block
-        self.channel_device.DO = word
-
-        self.set_get_register()
+        self.memory.memory[block][word] = self.ax
 
     def put_register(self, vm_block, vm_word):
         block, word = self.pagination.convert_address(vm_block, vm_word)
-
-        # source - user memory
-        self.channel_device.ST = 1
-        self.channel_device.SB = block
-        self.channel_device.SO = word
-        # destination - AX register
-        self.channel_device.DT = 6
-
-        self.set_put_register()
+        self.ax = self.memory.memory[block][word]
 
     def get_shared(self, vm_block, vm_word):
         block, word = self.pagination.convert_address(vm_block, vm_word)
-
-        # source - shared memory
-        self.channel_device.ST = 5
-        self.channel_device.SB = block
-        self.channel_device.SO = word
-        # destination - AX register
-        self.channel_device.DT = 6
-
-        self.set_get_shared()
+        # TODO:
+        pass
 
     def put_shared(self, vm_block, vm_word):
         block, word = self.pagination.convert_address(vm_block, vm_word)
-
-        # source - AX register
-        self.channel_device.ST = 6
-        # destination - shared memory
-        self.channel_device.DT = 5
-        self.channel_device.DB = block
-        self.channel_device.DO = word
-
-        self.set_put_shared()
+        # TODO:
+        pass
 
     # LOGICAL OPERATIONS
     def compare(self):
