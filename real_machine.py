@@ -129,4 +129,5 @@ class RealMachine:
 
     def remove_vm(self):
         self.interface.print_vm_exit()
+        self.memory.deallocate()
         self.vm_list.pop(0)
