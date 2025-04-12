@@ -10,18 +10,15 @@ class VirtualMachine:
     def exec(self):
         cmd = self.cpu.get_command()
         self.cpu.reset_sf_register()
-        cmd = "GN54"
+        cmd = "GR54"
 
         valid_cmd = self.handle_non_parsable(cmd)
         if not valid_cmd:
-            try:
-                block_hex, word_hex = self.parse_args(cmd)
-                block = hex_str_to_int(block_hex)
-                word = hex_str_to_int(word_hex)
-                valid_cmd = self.handle_parsable(cmd, block, word)
-            except:
-                pass
-
+            block_hex, word_hex = self.parse_args(cmd)
+            block = hex_str_to_int(block_hex)
+            word = hex_str_to_int(word_hex)
+            valid_cmd = self.handle_parsable(cmd, block, word)
+        
         if not valid_cmd:
             self.cpu.set_invalid_operation()
     
