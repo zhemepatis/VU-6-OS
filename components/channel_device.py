@@ -70,6 +70,26 @@ class ChannelDevice:
         block = self.DB + offset
         word = self.DO
         self.memory.memory[block][word] = value
+
+    def put_data(self):
+        print("Data output starting from Block {block}, Word {word}:")
+        result_str = ""
+
+        block = self.SB + self.memory.USER_MEMORY_START
+        word = self.SO
+
+        for _ in range(10):
+            char = chr(self.memory.memory[block][word])
+
+            if char == '$':
+                break
+
+            result_str += char
+
+            block += int((word + 1) / self.memory.BLOCK_LENGTH)
+            word = (word + 1) % self.memory.BLOCK_LENGTH
+
+        print(result_str)
         
     def get_user_input(self):
         value = input(f"Enter a number: ")
@@ -171,23 +191,3 @@ class ChannelDevice:
                     vm_index = 0
                     vm_block_index += 1
                     vm_memory_block = self.memory.memory[vm_memory_pagination_table][vm_block_index]
-
-
-    def put_data(self):
-        print("Data output starting from Block {block}, Word {word}:")
-        result_str = ""
-
-        block = self.SB + self.memory.USER_MEMORY_START
-        word = self.SO
-
-        for _ in range(10):
-            char = self.memory.memory[block][word]
-            if char == '$':
-                break
-
-            result += char
-
-            block += (word + 1) / self.memory.BLOCK_LENGTH
-            word = (word + 1) % self.memory.BLOCK_LENGTH
-
-        print(result_str)
