@@ -137,9 +137,11 @@ class ChannelDevice:
         words = [word for block in supervisor_memory for word in block]
 
         if "$AMJ" not in words:
-            raise Exception("Missing '$AMJ' in supervisor memory.")
+            print("Missing '$AMJ' in supervisor memory.")
+            return False
         if "$END" not in words:
-            raise Exception("Missing '$END' in supervisor memory.")
+            print("Missing '$END' in supervisor memory.")
+            return False
         
         start_index = words.index("$AMJ") + 2 #plus 2 because skip the title
         end_index = words.index("$END")
@@ -156,11 +158,14 @@ class ChannelDevice:
             args = word[2:] if command in commands_with_args else ""
             
             if command not in valid_commands and command not in commands_with_args:
-                raise Exception(f"Invalid command '{command}' found in supervisor memory.")
+                print(f"Invalid command '{command}' found in supervisor memory.")
+                return False
             
             if command in commands_with_args and (len(args) != 2 or not args.isalnum()):
-                raise Exception(f"Command '{command}' requires arguments.")
+                print(f"Command '{command}' requires arguments.")
+                return False
         print("Supervisor memory validated successfully.")
+        return True
 
     def load_program_to_user_memory(self):
         supervisor_memory_start = self.memory.SUPERVISOR_MEMORY_START #block number of supervisor memory
