@@ -56,11 +56,11 @@ class RealMachine:
         return False
 
     def load_program(self):
+        self.create_vm()
         title = input("Enter program name: ")
         self.channel_device.load_program_to_supervisor_memory(title)
         self.channel_device.validate_supervisor_memory()
         self.channel_device.load_program_to_user_memory()
-        self.create_vm()
 
     def change_mode(self):
         self.cpu.change_operation_mode_flag()
@@ -123,7 +123,7 @@ class RealMachine:
     
     # OTHERS
     def create_vm(self):
-        ptr = self.memory.allocate();
+        ptr = self.memory.allocate()
         self.cpu.ptr = ptr
 
         vm = VirtualMachine(self.cpu)
@@ -131,5 +131,5 @@ class RealMachine:
 
     def remove_vm(self):
         self.interface.print_vm_exit()
-        self.memory.deallocate()
+        self.memory.deallocate(self.cpu.ptr)
         self.vm_list.pop(0)
