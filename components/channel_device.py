@@ -95,14 +95,16 @@ class ChannelDevice:
 
         if program_index!=-1:
             while not program_end:
-                self.memory.memory[supervisor_memory_start][supervisor_index] = lines[program_index][:4]
-                if lines[program_index]=="$END\n":
+                current_line = lines[program_index].strip()
+                self.memory.memory[supervisor_memory_start][supervisor_index] = current_line
+                if current_line=="$END":
                     program_end = True
 
                 if supervisor_index == 15: #if the first block of supervisor memory ends
                     supervisor_index = 0
                     supervisor_memory_start += 1
-                supervisor_index += 1
+                else:
+                    supervisor_index += 1
                 program_index += 1
                 
 
@@ -140,24 +142,30 @@ class ChannelDevice:
     def load_program_to_user_memory(self):
         supervisor_memory_start = self.memory.SUPERVISOR_MEMORY_START #block number of supervisor memory
         vm_memory_pagination_table = self.cpu.ptr #pagination table address
-        index = 0 #index of words in supervisor
+        supervisor_index = 2 #index of words in supervisor - begin from commands, skip amj and title
+        vm_index = 0
         end_of_program = False
         vm_block_index = 0 #index of which block of vm memory to take
         vm_memory_block = self.memory.memory[vm_memory_pagination_table][vm_block_index] #take block from pagination
 
         while not end_of_program:
-            value = self.memory.memory[supervisor_memory_start][index]
-            self.memory.memory[vm_memory_block][index] = value
+            value = self.memory.memory[supervisor_memory_start][supervisor_index] #get value from supervisor
 
             if value=="$END":
                 end_of_program = True
                 break
 
-            index += 1
+            self.memory.memory[vm_memory_block][vm_index] = value #write value to vm memory
 
-            if index == 16: #if the first block of supervisor memory ends
-                    index = 0
+            supervisor_index += 1
+            vm_index += 1
+
+            if supervisor_index == 16: #if the first block of supervisor memory ends
+                    supervisor_index = 0
                     supervisor_memory_start += 1
+                    
+            if vm_index == 16:
+                    vm_index = 0
                     vm_block_index += 1
                     vm_memory_block = self.memory.memory[vm_memory_pagination_table][vm_block_index]
 
