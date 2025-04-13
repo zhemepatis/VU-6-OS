@@ -96,7 +96,7 @@ class CPU:
     def set_ic_register(self, vm_block, vm_word):
         self.ic = vm_block << 8 | vm_word
 
-    def increment_ic_register(self, increment = 1):
+    def increment_ic_register(self, increment):
         block = self.ic >> 8
         word = (block << 8) ^ self.ic
 
@@ -220,29 +220,34 @@ class CPU:
 
     # CONTROL MANAGEMENT OPERATIONS
     def jump(self, vm_block, vm_word):
+        # block, word = self.pagination.convert_address(vm_block, vm_word)
         self.set_ic_register(vm_block, vm_word)
 
     def jump_if_equal(self, vm_block, vm_word):
         zero_flag = self.get_zero_flag()
         
         if zero_flag == 1:
-            self.set_ic_register(vm_block, vm_word)
+            block, word = self.pagination.convert_address(vm_block, vm_word)
+            self.set_ic_register(block, word)
 
     def jump_if_not_equal(self, vm_block, vm_word):
         zero_flag = self.get_zero_flag()
 
         if zero_flag == 0:
-            self.set_ic_register(vm_block, vm_word)
+            block, word = self.pagination.convert_address(vm_block, vm_word)
+            self.set_ic_register(block, word)
 
     def jump_if_below(self, vm_block, vm_word):
         carry_flag = self.get_carry_flag()
 
         if carry_flag == 1:
-            self.set_ic_register(vm_block, vm_word)
+            block, word = self.pagination.convert_address(vm_block, vm_word)
+            self.set_ic_register(block, word)
 
     def jump_if_above(self, vm_block, vm_word):
         zero_flag = self.get_zero_flag()
         carry_flag = self.get_carry_flag()
 
         if zero_flag == 0 and carry_flag == 0:
-            self.set_ic_register(vm_block, vm_word)
+            block, word = self.pagination.convert_address(vm_block, vm_word)
+            self.set_ic_register(block, word)

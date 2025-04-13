@@ -135,7 +135,8 @@ class RealMachine:
     def create_vm(self):
         ptr = self.memory.allocate()
         self.cpu.ptr = ptr
-        self.cpu.ic = 0x0
+
+        self.cpu.set_ic_register(0, 0)
 
         vm = VirtualMachine(self.cpu)
         self.vm_list.append(vm)

@@ -16,13 +16,14 @@ class VirtualMachine:
             self.cpu.increment_ic_register()
             return
 
+        print(cmd)
         block_hex, word_hex = self.parse_args(cmd)
         block = hex_str_to_int(block_hex)
         word = hex_str_to_int(word_hex)
 
-        valid_cmd, io_operation = self.handle_parsable(cmd, block, word)
+        valid_cmd, control_transfer_cmd= self.handle_parsable(cmd, block, word)
         if valid_cmd:
-            increment = 3 if io_operation else 1
+            increment = 0 if control_transfer_cmd else 1
             self.cpu.increment_ic_register(increment)
             return
     
