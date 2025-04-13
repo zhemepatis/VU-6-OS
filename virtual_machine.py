@@ -9,14 +9,14 @@ class VirtualMachine:
     
     def exec(self):
         cmd = self.cpu.get_command()
+        print(f"\nCurrent command: {cmd}")
         self.cpu.reset_sf_register()
 
         valid_cmd = self.handle_non_parsable(cmd)
         if valid_cmd:
             self.cpu.increment_ic_register()
             return
-
-        print(cmd)
+        
         block_hex, word_hex = self.parse_args(cmd)
         block = hex_str_to_int(block_hex)
         word = hex_str_to_int(word_hex)
