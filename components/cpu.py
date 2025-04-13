@@ -96,6 +96,15 @@ class CPU:
     def set_ic_register(self, vm_block, vm_word):
         self.ic = vm_block << 8 | vm_word
 
+    def increment_ic_register(self, increment = 1):
+        block = self.ic >> 8
+        word = (block << 8) ^ self.ic
+
+        block += (word + increment) / self.memory.BLOCK_LENGTH
+        word = (word + increment) % self.memory.BLOCK_LENGTH
+
+        self.set_ic_register(block, word)
+
     # ARITHMETIC OPERATIONS
     def addition(self):
         self.ax += self.bx

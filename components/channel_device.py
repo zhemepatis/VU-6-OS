@@ -181,6 +181,7 @@ class ChannelDevice:
 
         for _ in range(10):
             result += self.memory.memory[block][word]
+            
             block += (word + 1) / self.memory.BLOCK_LENGTH
             word = (word + 1) % self.memory.BLOCK_LENGTH
 
