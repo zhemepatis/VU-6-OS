@@ -19,9 +19,9 @@ class RealMachine:
         while run_rm:
             if not run_vm:
                 choice = self.interface.main_menu()
-                self.handle_main_menu(choice)
+                success = self.handle_main_menu(choice)
 
-                if choice == 1:
+                if choice == 1 and success:
                     run_vm = True
                 
                 if choice == 3:
@@ -69,7 +69,6 @@ class RealMachine:
         self.channel_device.load_program_to_supervisor_memory(title)
 
         success = self.channel_device.validate_supervisor_memory()
-        success = True # TODO: remove
         if success:
             self.channel_device.load_program_to_user_memory()
             return True

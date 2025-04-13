@@ -1,6 +1,6 @@
 $AMJ
 LOOP
-JM00
+dM00
 EXIT
 $END
 
