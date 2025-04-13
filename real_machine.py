@@ -14,15 +14,22 @@ class RealMachine:
 
     def run(self):
         run_vm = False
-
-        while True:
+        run_rm = True
+        
+        while run_rm:
             if not run_vm:
                 choice = self.interface.main_menu()
-                run_vm = self.handle_main_menu(choice)
-                continue
+                success = self.handle_main_menu(choice)
+
+                if choice == 1 and success:
+                    run_vm = True
+                
+                if choice == 3:
+                    run_rm = False    
             
             while run_vm:
-                if self.cpu.get_operation_mode_flag() == 1:
+                operation_mode = self.cpu.get_operation_mode_flag()
+                if operation_mode == 1:
                     choice = self.interface.step_by_step_menu()
                     self.handle_step_by_step_menu(choice)
 
@@ -33,7 +40,9 @@ class RealMachine:
                         continue
 
                 self.vm_list[0].exec()
-                self.cpu.decrement_timer()
+
+                io_operation = self.cpu.si != 0 and self.cpu.si != 4
+                self.cpu.decrement_timer(io_operation)
 
                 if self.test_interrupt():
                     run_vm = self.exec_interrupt()
@@ -41,33 +50,33 @@ class RealMachine:
     # MAIN MENU
     def handle_main_menu(self, choice):
         if choice == 1:
-            self.load_program()
-            return True
+            return self.load_program()
         
         if choice == 2:
             self.change_mode()
             return False
 
         if choice == 3:
-            self.exit()
+            self.interface.print_rm_exit()
             return False
-        
+
         self.interface.print_invalid_option()
-        return False
 
     def load_program(self):
         self.create_vm()
+
         title = input("Enter program name: ")
         self.channel_device.load_program_to_supervisor_memory(title)
-        self.channel_device.validate_supervisor_memory()
-        self.channel_device.load_program_to_user_memory()
+
+        success = self.channel_device.validate_supervisor_memory()
+        if success:
+            self.channel_device.load_program_to_user_memory()
+            return True
+        
+        return False
 
     def change_mode(self):
         self.cpu.change_operation_mode_flag()
-
-    def exit(self):
-        print("Exiting system. Thank you, come again!")
-        exit(0)
     
     # STEP-BY-STEP MENU
     def handle_step_by_step_menu(self, choice):
@@ -125,6 +134,8 @@ class RealMachine:
     def create_vm(self):
         ptr = self.memory.allocate()
         self.cpu.ptr = ptr
+
+        self.cpu.set_ic_register(0, 0)
 
         vm = VirtualMachine(self.cpu)
         self.vm_list.append(vm)

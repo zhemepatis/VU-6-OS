@@ -70,6 +70,26 @@ class ChannelDevice:
         block = self.DB + offset
         word = self.DO
         self.memory.memory[block][word] = value
+
+    def put_data(self):
+        print("Data output starting from Block {block}, Word {word}:")
+        result_str = ""
+
+        block = self.SB + self.memory.USER_MEMORY_START
+        word = self.SO
+
+        for _ in range(10):
+            char = chr(self.memory.memory[block][word])
+
+            if char == '$':
+                break
+
+            result_str += char
+
+            block += int((word + 1) / self.memory.BLOCK_LENGTH)
+            word = (word + 1) % self.memory.BLOCK_LENGTH
+
+        print(result_str)
         
     def get_user_input(self):
         value = input(f"Enter a number: ")
@@ -117,9 +137,11 @@ class ChannelDevice:
         words = [word for block in supervisor_memory for word in block]
 
         if "$AMJ" not in words:
-            raise Exception("Missing '$AMJ' in supervisor memory.")
+            print("Missing '$AMJ' in supervisor memory.")
+            return False
         if "$END" not in words:
-            raise Exception("Missing '$END' in supervisor memory.")
+            print("Missing '$END' in supervisor memory.")
+            return False
         
         start_index = words.index("$AMJ") + 2 #plus 2 because skip the title
         end_index = words.index("$END")
@@ -136,11 +158,14 @@ class ChannelDevice:
             args = word[2:] if command in commands_with_args else ""
             
             if command not in valid_commands and command not in commands_with_args:
-                raise Exception(f"Invalid command '{command}' found in supervisor memory.")
+                print(f"Invalid command '{command}' found in supervisor memory.")
+                return False
             
             if command in commands_with_args and (len(args) != 2 or not args.isalnum()):
-                raise Exception(f"Command '{command}' requires arguments.")
+                print(f"Command '{command}' requires arguments.")
+                return False
         print("Supervisor memory validated successfully.")
+        return True
 
     def load_program_to_user_memory(self):
         supervisor_memory_start = self.memory.SUPERVISOR_MEMORY_START #block number of supervisor memory
@@ -171,17 +196,3 @@ class ChannelDevice:
                     vm_index = 0
                     vm_block_index += 1
                     vm_memory_block = self.memory.memory[vm_memory_pagination_table][vm_block_index]
-
-
-    def put_data(self):
-        print("Data output starting from Block {block}, Word {word}:")
-        block = self.SB + self.memory.USER_MEMORY_START
-        word = self.SO
-        result_str = ""
-
-        for _ in range(10):
-            result += self.memory.memory[block][word]
-            block += (word + 1) / self.memory.BLOCK_LENGTH
-            word = (word + 1) % self.memory.BLOCK_LENGTH
-
-        print(result_str)
