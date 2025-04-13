@@ -18,6 +18,10 @@ class ChannelDevice:
         self.memory = memory
 
     def exchange(self):
+        if self.cpu.si == 3:
+            self.put_data()
+            return 
+
         value = self.handle_read()
         self.handle_write(value)
 
@@ -106,7 +110,6 @@ class ChannelDevice:
                 else:
                     supervisor_index += 1
                 program_index += 1
-                
 
     def validate_supervisor_memory(self):
         supervisor_memory = self.memory.memory[self.memory.SUPERVISOR_MEMORY_START:]
@@ -170,16 +173,15 @@ class ChannelDevice:
                     vm_memory_block = self.memory.memory[vm_memory_pagination_table][vm_block_index]
 
 
-            
+    def put_data(self):
+        print("Data output starting from Block {block}, Word {word}:")
+        block = self.SB + self.memory.USER_MEMORY_START
+        word = self.SO
+        result_str = ""
 
-    # TODO: move?
-    # def put_data(self, block, word):
-    #     print("Data output starting from Block {block}, Word {word}:")
-    #     for i in range(10):
-    #         current_word = word + i
-    #         if current_word >= len(self.memory.memory[block]):
-    #             break
-    #         if self.memory.memory[block][current_word] == ord('$'):
-    #             break
-    #         print(self.memory.memory[block][current_word], end=" ")
-    #     print()
+        for _ in range(10):
+            result += self.memory.memory[block][word]
+            block += (word + 1) / self.memory.BLOCK_LENGTH
+            word = (word + 1) % self.memory.BLOCK_LENGTH
+
+        print(result_str)
