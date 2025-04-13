@@ -100,7 +100,7 @@ class CPU:
         block = self.ic >> 8
         word = (block << 8) ^ self.ic
 
-        block += (word + increment) / self.memory.BLOCK_LENGTH
+        block += int((word + increment) / self.memory.BLOCK_LENGTH)
         word = (word + increment) % self.memory.BLOCK_LENGTH
 
         self.set_ic_register(block, word)

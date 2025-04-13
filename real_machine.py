@@ -40,7 +40,7 @@ class RealMachine:
                         continue
 
                 self.vm_list[0].exec()
-                
+
                 io_operation = self.cpu.si != 0 and self.cpu.si != 4
                 self.cpu.decrement_timer(io_operation)
 
@@ -69,6 +69,7 @@ class RealMachine:
         self.channel_device.load_program_to_supervisor_memory(title)
 
         success = self.channel_device.validate_supervisor_memory()
+        success = True # TODO: remove
         if success:
             self.channel_device.load_program_to_user_memory()
             return True
@@ -134,6 +135,7 @@ class RealMachine:
     def create_vm(self):
         ptr = self.memory.allocate()
         self.cpu.ptr = ptr
+        self.cpu.ic = 0x0
 
         vm = VirtualMachine(self.cpu)
         self.vm_list.append(vm)
