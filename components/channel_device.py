@@ -175,13 +175,18 @@ class ChannelDevice:
 
     def put_data(self):
         print("Data output starting from Block {block}, Word {word}:")
-        block = self.SB + self.memory.USER_MEMORY_START
-        word = self.SO
         result_str = ""
 
+        block = self.SB + self.memory.USER_MEMORY_START
+        word = self.SO
+
         for _ in range(10):
-            result += self.memory.memory[block][word]
-            
+            char = self.memory.memory[block][word]
+            if char == '$':
+                break
+
+            result += char
+
             block += (word + 1) / self.memory.BLOCK_LENGTH
             word = (word + 1) % self.memory.BLOCK_LENGTH
 
