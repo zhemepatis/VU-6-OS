@@ -85,7 +85,7 @@ class Interface:
         print(f"Block {block_num:02X}: {block_str}")
 
     def get_block_str(self, memory, block_num): 
-        return " ".join(f"{word:02X}" for word in memory.memory[block_num])
+        return " ".join(f"{word:02X}" if isinstance(word, int) else str(word) for word in memory.memory[block_num])
 
     def print_invalid_option(self):
         print("Invalid choice. Try again!")

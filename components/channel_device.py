@@ -87,7 +87,7 @@ class ChannelDevice:
         program_index = -1 #index of the lines from the file that are being copied to supervisor
 
         for i, line in enumerate(lines):
-            if line==title:
+            if line==title+'\n':
                 program_index = i-1
                 break
 
@@ -95,8 +95,8 @@ class ChannelDevice:
 
         if program_index!=-1:
             while not program_end:
-                self.memory.memory[supervisor_memory_start][supervisor_index] = lines[program_index]
-                if lines[program_index]=="$END":
+                self.memory.memory[supervisor_memory_start][supervisor_index] = lines[program_index][:4]
+                if lines[program_index]=="$END\n":
                     program_end = True
 
                 if supervisor_index == 15: #if the first block of supervisor memory ends
@@ -108,19 +108,27 @@ class ChannelDevice:
 
     def validate_supervisor_memory(self):
         supervisor_memory = self.memory.memory[self.memory.SUPERVISOR_MEMORY_START:]
-        if not supervisor_memory or supervisor_memory[0][0] != "$AMJ":
+
+        words = [word for block in supervisor_memory for word in block]
+
+        if "$AMJ" not in words:
             raise Exception("Missing '$AMJ' in supervisor memory.")
-        if not supervisor_memory[-1][0] == "$END":
+        if "$END" not in words:
             raise Exception("Missing '$END' in supervisor memory.")
+        
+        start_index = words.index("$AMJ") + 2 #plus 2 because skip the title
+        end_index = words.index("$END")
+
+        program_words = words[start_index:end_index]
         
         valid_commands = {"ADD", "SUB", "MUL", "DIV", "XCHG", "CMP", "EXIT"}
         commands_with_args = {"GN", "PN", "PD", "GR", "PR", "GS", "PS",
                           "JM", "JE", "JN", "JB", "JA"}
         
-        for line in supervisor_memory[2:-1]:
-            full_command = line[0]
-            command = full_command[:2] if full_command[:2] in commands_with_args else full_command
-            args = full_command[2:] if command in commands_with_args else ""
+        for word in program_words:
+            
+            command = word[:2] if word[:2] in commands_with_args else word
+            args = word[2:] if command in commands_with_args else ""
             
             if command not in valid_commands and command not in commands_with_args:
                 raise Exception(f"Invalid command '{command}' found in supervisor memory.")
@@ -130,20 +138,29 @@ class ChannelDevice:
         print("Supervisor memory validated successfully.")
 
     def load_program_to_user_memory(self):
-        supervisor_memory_start = self.memory.SUPERVISOR_MEMORY_START
-        vm_memory_pagination_table = self.cpu.ptr
-        index = 0
+        supervisor_memory_start = self.memory.SUPERVISOR_MEMORY_START #block number of supervisor memory
+        vm_memory_pagination_table = self.cpu.ptr #pagination table address
+        index = 0 #index of words in supervisor
         end_of_program = False
+        vm_block_index = 0 #index of which block of vm memory to take
+        vm_memory_block = self.memory.memory[vm_memory_pagination_table][vm_block_index] #take block from pagination
 
         while not end_of_program:
-            memory_block = self.memory.memory[vm_memory_pagination_table][index]
-            value = self.get_from_memory(supervisor_memory_start+index)
-            self.put_to_memory(memory_block, value)
+            value = self.memory.memory[supervisor_memory_start][index]
+            self.memory.memory[vm_memory_block][index] = value
 
             if value=="$END":
                 end_of_program = True
-            
+                break
+
             index += 1
+
+            if index == 16: #if the first block of supervisor memory ends
+                    index = 0
+                    supervisor_memory_start += 1
+                    vm_block_index += 1
+                    vm_memory_block = self.memory.memory[vm_memory_pagination_table][vm_block_index]
+
 
             
 
