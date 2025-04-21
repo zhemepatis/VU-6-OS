@@ -69,6 +69,13 @@ class CPU:
         else:
             self.ti = max(self.ti - 1, 0)
 
+    # SM REGISTER
+    def put_semaphor_register(self):
+        self.sm = 1
+
+    def raise_semaphor_register(self):
+        self.sm = 0
+
     # SF REGISTER
     def reset_sf_register(self):
         self.sf >>= 2
