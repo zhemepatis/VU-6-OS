@@ -127,7 +127,11 @@ class RealMachine:
         if self.cpu.si == 4:
             return False
         
+        if self.cpu.si == 5 or self.cpu.si == 6:
+            self.cpu.put_semaphor_register()
+        
         self.channel_device.exchange()
+        self.cpu.raise_semaphor_register()
         return True
     
     # OTHERS
