@@ -150,7 +150,10 @@ class CPU:
             return 
 
     def division(self):
-        self.ax /= self.bx
+        dividend = self.ax
+        divisor = self.bx
+
+        self.ax = int(dividend / divisor) << 8 | (dividend % divisor)
 
         if self.bx == 0:
             self.set_division_by_zero()
