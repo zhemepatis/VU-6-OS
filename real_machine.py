@@ -66,9 +66,7 @@ class RealMachine:
         self.create_vm()
 
         title = input("Enter program name: ")
-        self.channel_device.load_program_to_supervisor_memory(title)
-
-        success = self.channel_device.validate_supervisor_memory()
+        success = self.channel_device.load_program_to_supervisor_memory(title)
         if success:
             self.channel_device.load_program_to_user_memory()
             return True

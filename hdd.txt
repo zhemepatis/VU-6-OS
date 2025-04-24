@@ -2,6 +2,13 @@ $AMJ
 LOOP
 JM00
 EXIT
+DATA
+Cia yra data
+labai daug data
+wow kiek daug data
+labai wow 
+ohoho
+data wohoo
 $END
 
 $AMJ
