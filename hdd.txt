@@ -13,9 +13,14 @@ $END
 
 $AMJ
 IOPG
+PD80
 GNF3
+PD90
 PNF3
 EXIT
+DATA
+Enter a number: $
+Your number: $
 $END
 
 $AMJ

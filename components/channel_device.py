@@ -1,3 +1,5 @@
+from utils.convertion import get_word_bytes
+
 class ChannelDevice:
     def __init__(self):
         # registers
@@ -72,27 +74,30 @@ class ChannelDevice:
         self.memory.memory[block][word] = value
 
     def put_data(self):
-        print("Data output starting from Block {block}, Word {word}:")
         result_str = ""
 
         block = self.SB + self.memory.USER_MEMORY_START
         word = self.SO
 
         for _ in range(10):
-            char = chr(self.memory.memory[block][word])
+            curr_word = self.memory.memory[block][word]
+            byte_list = get_word_bytes(curr_word)
 
-            if char == '$':
-                break
+            for byte in byte_list:
+                char = chr(byte)
 
-            result_str += char
+                if char == '$':
+                    break
+
+                result_str += char
 
             block += int((word + 1) / self.memory.BLOCK_LENGTH)
             word = (word + 1) % self.memory.BLOCK_LENGTH
 
-        print(result_str)
+        print(result_str, end="")
         
     def get_user_input(self):
-        value = input(f"Enter a number: ")
+        value = input()
         return int(value)
 
     def print_value(self, value):
@@ -163,8 +168,14 @@ class ChannelDevice:
                 data_word = 0
 
                 while i < len(current_line):
-                    chunk = current_line[i:i+4].ljust(4)
-                    self.memory.memory[data_block][data_word] = chunk
+                    chunk_str = current_line[i:i+4].ljust(4)
+                    chunk_len = len(chunk_str)
+                    
+                    if chunk_len < 4:
+                        for _ in range(4 - chunk_len):
+                            chunk_str += chr(0)
+
+                    self.memory.memory[data_block][data_word] = chunk_str
 
                     data_word += 1
                     i += 4
