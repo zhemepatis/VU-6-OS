@@ -66,9 +66,7 @@ class RealMachine:
         self.create_vm()
 
         title = input("Enter program name: ")
-        self.channel_device.load_program_to_supervisor_memory(title)
-
-        success = self.channel_device.validate_supervisor_memory()
+        success = self.channel_device.load_program_to_supervisor_memory(title)
         if success:
             self.channel_device.load_program_to_user_memory()
             return True
@@ -107,16 +105,19 @@ class RealMachine:
 
     def exec_interrupt(self):
         if self.cpu.ti == 0:
-            print("Timer interrupt triggered!")
+            if self.cpu.get_operation_mode_flag() == 1:
+                print("Timer interrupt triggered!")
             self.cpu.ti = 10
 
         if self.cpu.pi > 0:
-            print(f"Program interrupt triggered: PI = {self.cpu.pi}")
+            if self.cpu.get_operation_mode_flag() == 1:
+                print(f"Program interrupt triggered: PI = {self.cpu.pi}")
             self.cpu.pi = 0
             return False
 
         if self.cpu.si > 0:
-            print(f"Supervisor interrupt triggered: SI = {self.cpu.si}")
+            if self.cpu.get_operation_mode_flag() == 1:
+                print(f"Supervisor interrupt triggered: SI = {self.cpu.si}")
             result = self.handle_si_interrupt()
             self.cpu.si = 0
             return result

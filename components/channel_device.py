@@ -1,3 +1,5 @@
+from utils.convertion import get_word_bytes
+
 class ChannelDevice:
     def __init__(self):
         # registers
@@ -72,27 +74,30 @@ class ChannelDevice:
         self.memory.memory[block][word] = value
 
     def put_data(self):
-        print("Data output starting from Block {block}, Word {word}:")
         result_str = ""
 
         block = self.SB + self.memory.USER_MEMORY_START
         word = self.SO
 
         for _ in range(10):
-            char = chr(self.memory.memory[block][word])
+            curr_word = self.memory.memory[block][word]
+            byte_list = get_word_bytes(curr_word)
 
-            if char == '$':
-                break
+            for byte in byte_list:
+                char = chr(byte)
 
-            result_str += char
+                if char == '$':
+                    break
+
+                result_str += char
 
             block += int((word + 1) / self.memory.BLOCK_LENGTH)
             word = (word + 1) % self.memory.BLOCK_LENGTH
 
-        print(result_str)
+        print(result_str, end="")
         
     def get_user_input(self):
-        value = input(f"Enter a number: ")
+        value = input()
         return int(value)
 
     def print_value(self, value):
@@ -112,87 +117,87 @@ class ChannelDevice:
 
         for i, line in enumerate(lines):
             if line==title+'\n':
-                program_index = i-1
+                if i == 0 or lines[i-1].strip() != "$AMJ":
+                    return False #$AMJ not found
+                program_index = i+1
                 break
 
+        if program_index==-1:
+            return False #Title not found
+
         program_end = False
+        data_section = False
+        memory_end = 0x55
+        data_block = supervisor_memory_start + self.memory.DATA_BLOCK_START
+        data_word = 0
+        
 
-        if program_index!=-1:
-            while not program_end:
-                current_line = lines[program_index].strip()
+        while not program_end and program_index < len(lines):
+            current_line = lines[program_index].strip()
+
+            if supervisor_memory_start >= data_block: #if commands do not fit in memory and fill in data segment part
+                return False #not enough supervisor memory 
+            
+            if data_block > memory_end:
+                return False #data does not fit in memory
+            
+            if current_line=="$AMJ":
+                return False #$END is not found and another program begins
+            
+            if current_line=="$END":
+                program_end = True
+                break
+
+            if current_line=="DATA":
+                data_section = True
+                program_index += 1
+                continue
+
+            #Commands writing part
+            if not data_section:
                 self.memory.memory[supervisor_memory_start][supervisor_index] = current_line
-                if current_line=="$END":
-                    program_end = True
 
-                if supervisor_index == 15: #if the first block of supervisor memory ends
+                if supervisor_index == 15: #if one block of supervisor memory ends
                     supervisor_index = 0
                     supervisor_memory_start += 1
                 else:
                     supervisor_index += 1
-                program_index += 1
+            #Data segment writing part
+            else:
+                i=0
+                data_word = 0
 
-    def validate_supervisor_memory(self):
-        supervisor_memory = self.memory.memory[self.memory.SUPERVISOR_MEMORY_START:]
+                while i < len(current_line):
+                    chunk_str = current_line[i:i+4].ljust(4)
+                    chunk_len = len(chunk_str)
+                    
+                    if chunk_len < 4:
+                        for _ in range(4 - chunk_len):
+                            chunk_str += chr(0)
 
-        words = [word for block in supervisor_memory for word in block]
+                    self.memory.memory[data_block][data_word] = chunk_str
 
-        if "$AMJ" not in words:
-            print("Missing '$AMJ' in supervisor memory.")
-            return False
-        if "$END" not in words:
-            print("Missing '$END' in supervisor memory.")
-            return False
+                    data_word += 1
+                    i += 4
+
+                    if data_word == 16:
+                        data_word = 0
+                        data_block += 1
+                data_block += 1
+
+            program_index += 1
+
+        if not program_end:
+            return False #there is no $END for this program until the end of file
         
-        start_index = words.index("$AMJ") + 2 #plus 2 because skip the title
-        end_index = words.index("$END")
-
-        program_words = words[start_index:end_index]
-        
-        valid_commands = {"ADD", "SUB", "MUL", "DIV", "XCHG", "CMP", "EXIT"}
-        commands_with_args = {"GN", "PN", "PD", "GR", "PR", "GS", "PS",
-                          "JM", "JE", "JN", "JB", "JA"}
-        
-        for word in program_words:
-            
-            command = word[:2] if word[:2] in commands_with_args else word
-            args = word[2:] if command in commands_with_args else ""
-            
-            if command not in valid_commands and command not in commands_with_args:
-                print(f"Invalid command '{command}' found in supervisor memory.")
-                return False
-            
-            if command in commands_with_args and (len(args) != 2 or not args.isalnum()):
-                print(f"Command '{command}' requires arguments.")
-                return False
-        print("Supervisor memory validated successfully.")
         return True
 
     def load_program_to_user_memory(self):
-        supervisor_memory_start = self.memory.SUPERVISOR_MEMORY_START #block number of supervisor memory
-        vm_memory_pagination_table = self.cpu.ptr #pagination table address
-        supervisor_index = 2 #index of words in supervisor - begin from commands, skip amj and title
-        vm_index = 0
-        end_of_program = False
-        vm_block_index = 0 #index of which block of vm memory to take
-        vm_memory_block = self.memory.memory[vm_memory_pagination_table][vm_block_index] #take block from pagination
-
-        while not end_of_program:
-            value = self.memory.memory[supervisor_memory_start][supervisor_index] #get value from supervisor
-
-            if value=="$END":
-                end_of_program = True
-                break
-
-            self.memory.memory[vm_memory_block][vm_index] = value #write value to vm memory
-
-            supervisor_index += 1
-            vm_index += 1
-
-            if supervisor_index == 16: #if the first block of supervisor memory ends
-                    supervisor_index = 0
-                    supervisor_memory_start += 1
-                    
-            if vm_index == 16:
-                    vm_index = 0
-                    vm_block_index += 1
-                    vm_memory_block = self.memory.memory[vm_memory_pagination_table][vm_block_index]
+        supervisor_memory_start = self.memory.SUPERVISOR_MEMORY_START
+        vm_memory_pagination_table = self.cpu.ptr
+        
+        for i in range(16):
+            supervisor_block = supervisor_memory_start + i
+            vm_block = self.memory.memory[vm_memory_pagination_table][i]
+            
+            self.memory.memory[vm_block] = self.memory.memory[supervisor_block]

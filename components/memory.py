@@ -9,6 +9,7 @@ class Memory:
         self.MEMORY_END = 0x55
         self.BLOCK_LENGTH = 0x10 # 16 decimal 
         self.VM_REQUIRED_BLOCK_NUM = 0x11 # 17 decimal
+        self.DATA_BLOCK_START = 0x08
         # lists for block occupation tracking
         self.free_blocks = list(range(self.USER_MEMORY_START, self.SHARED_MEMORY_START)) # blocks from 0 to 67 (or 0 to 43 in hex)
         random.shuffle(self.free_blocks)

@@ -2,13 +2,25 @@ $AMJ
 LOOP
 JM00
 EXIT
+DATA
+Cia yra data
+labai daug data
+wow kiek daug data
+labai wow 
+ohoho
+data wohoo
 $END
 
 $AMJ
 IOPG
+PD80
 GNF3
+PD90
 PNF3
 EXIT
+DATA
+Enter a number: $
+Your number: $
 $END
 
 $AMJ

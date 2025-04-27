@@ -9,7 +9,8 @@ class VirtualMachine:
     
     def exec(self):
         cmd = self.cpu.get_command()
-        print(f"\nCurrent command: {cmd}")
+        if self.cpu.get_operation_mode_flag() == 1:
+            print(f"\nCurrent command: {cmd}")
         self.cpu.reset_sf_register()
 
         valid_cmd = self.handle_non_parsable(cmd)
