@@ -1,48 +1,103 @@
-class Interface:
-    # MENU
-    def print_menu_list(self, title, list):
-        length = len(list)
+class ReadFromInterface:
+    def __init__(self, cpu):
+        self.cpu = cpu
 
-        if title != None:
-            print(f"\n{title} menu:")
+        self.step = 1
+        self.input = None
 
-        for idx in range(length):
-            print(f"{idx+1}. {list[idx]}")
+    def exec(self):
+        if self.step == 1:
+            self.step = 2
+            return
 
-    def get_menu_choice(self):
-        choice = input("Choose an option: ")
-        try:
-            choice = int(choice)
-        except: 
-            return -1
+        if self.step == 2:
+            self.input = input()
+            self.step = 3
+            return
+
+        if self.step == 3:
+            result = self.parse_run() # TODO: where to save program name?
+            self.step = 5 if result == None else 4
+            return
+
+        if self.step == 4:
+            pass
+
+        if self.step == 5:
+            pass
+
+        if self.step == 6:
+            success = self.parse_one_word("SWITCHMODE")
+            self.step = 7 if success else 8
+            return
+
+        if self.step == 7:
+            self.cpu.change_operation_mode_flag()
+            self.step = 5
+            return
+
+        if self.step == 8:
+            success = self.parse_one_word("EXIT")
+            self.step = 8 if success else 10
+            return
+
+        if self.step == 9:
+            pass
+
+        if self.step == 10:
+            step_by_step_mode = self.cpu.get_operation_mode_flag() == 1
+            self.step = 11 if step_by_step_mode else 13
+            return
+
+        if self.step == 11:
+            success = self.parse_one_word("PRINTCPU")
+            self.step = 12 if success else 13
+            return
+
+        if self.step == 12:
+            self.print_cpu()
+            self.step = 4
+            return
+
+        if self.step == 13:
+            success = self.parse_one_word("PRINTVM")
+            self.step = 14 if success else 15
+            return
+
+        if self.step == 14:
+            self.print_vm_memory()
+            self.step = 4
+            return
+
+        if self.step == 15:
+            success = self.parse_one_word("PRINTRM")
+            self.step = 16 if success else 17
+            return
+
+        if self.step == 16:
+            self.print_vm_memory()
+            self.step = 4
+            return
+
+        if self.step == 17:
+            pass
+
+
+    # PARSING
+    def parse_run(self):
+        if self.input.startswith("RUN"):
+            trimmed = self.input[3:].replace(" ", "")
+            return trimmed
         
-        return choice
+        return None
     
-    def main_menu(self):
-        title = "Main"
-        menu = [
-            "Run a program",
-            "Change operation mode",
-            "Exit"
-        ]
-
-        self.print_menu_list(title, menu)
-        return self.get_menu_choice()
+    def parse_one_word(self, cmd):
+        if self.input.startswith(cmd):
+            return True
+        
+        return False
     
-    def step_by_step_menu(self):
-        title = "Step-by-step"
-        menu = [
-            "Execute next command",
-            "Print CPU state",
-            "Print RM memory state",
-            "Print VM memory state",
-            "Exit step-by-step mode"
-        ]
-
-        self.print_menu_list(title, menu)
-        return self.get_menu_choice()
-    
-    # OTHER PRINTING
+    # PRINTING
     def print_cpu(self, cpu):
         print("\nGeneral use registers")
         print(f"AX: {hex(cpu.ax)}")
@@ -59,6 +114,7 @@ class Interface:
         print(f"SI: {hex(cpu.si)}")
         print(f"PI: {hex(cpu.pi)}")
         print(f"TI: {hex(cpu.ti)}")
+
 
     def print_real_memory(self, memory):
         for i in range(memory.MEMORY_END + 1):
@@ -81,17 +137,18 @@ class Interface:
             block_str = self.get_block_str(memory, block_num)
             self.print_block(i, block_str)
 
+
     def print_block(self, block_num, block_str):
         print(f"Block {block_num:04X}: {block_str}")
 
+
     def get_block_str(self, memory, block_num): 
         return " ".join(f"{word:04X}" if isinstance(word, int) else str(word) for word in memory.memory[block_num])
+    
 
-    def print_invalid_option(self):
-        print("Invalid choice. Try again!")
+    def print_invalid_command(self):
+        print("Invalid command.")
 
-    def print_vm_exit(self):
-        print("Exiting VM.")
 
     def print_rm_exit(self):
         print("Exiting system. Thank you, come again!")
