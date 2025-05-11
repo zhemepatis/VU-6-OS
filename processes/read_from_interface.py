@@ -1,4 +1,6 @@
-class ReadFromInterface:
+from process import Process
+
+class ReadFromInterface(Process):
     def __init__(self, cpu):
         # components
         self.cpu = cpu

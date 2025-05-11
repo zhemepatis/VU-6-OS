@@ -1,9 +1,10 @@
+from process import Process
 from components.memory import Memory
 from components.channel_device import ChannelDevice
 from components.pagination_mechanism import PaginationMechanism
 from components.cpu import CPU
 
-class StartStop:
+class StartStop(Process):
     def __init__(self):
         # components
         self.memory = None
