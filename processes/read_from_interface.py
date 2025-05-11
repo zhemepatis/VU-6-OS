@@ -1,9 +1,11 @@
 class ReadFromInterface:
     def __init__(self, cpu):
+        # components
         self.cpu = cpu
-
+        # process specific
         self.step = 1
         self.input = None
+
 
     def exec(self):
         if self.step == 1:
