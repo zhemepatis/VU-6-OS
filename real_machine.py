@@ -1,13 +1,13 @@
 from virtual_machine import VirtualMachine
-from processes.interface import Interface
+from processes.read_from_interface import Interface
 
 class RealMachine:
-    def __init__(self, cpu, memory, pagination, channel_device):
+    def __init__(self):
         # components
-        self.cpu = cpu
-        self.memory = memory
-        self.pagination = pagination
-        self.channel_device = channel_device
+        self.cpu = None
+        self.memory = None
+        self.pagination = None
+        self.channel_device = None
         # other
         self.interface = Interface()
         self.vm_list = []
