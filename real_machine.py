@@ -1,5 +1,5 @@
 from virtual_machine import VirtualMachine
-from processes.read_from_interface import Interface
+from processes.start_stop import *
 
 class RealMachine:
     def __init__(self):
@@ -9,43 +9,50 @@ class RealMachine:
         self.pagination = None
         self.channel_device = None
         # other
-        self.interface = Interface()
-        self.vm_list = []
+        self.running = None
+        self.blocked = []
+        self.ready = []
+        self.ready_stopped = []
+        self.blocked_stopped = []
 
     def run(self):
-        run_vm = False
-        run_rm = True
+
+
+
+    # def run(self):
+    #     run_vm = False
+    #     run_rm = True
         
-        while run_rm:
-            if not run_vm:
-                choice = self.interface.main_menu()
-                success = self.handle_main_menu(choice)
+    #     while run_rm:
+    #         if not run_vm:
+    #             choice = self.interface.main_menu()
+    #             success = self.handle_main_menu(choice)
 
-                if choice == 1 and success:
-                    run_vm = True
+    #             if choice == 1 and success:
+    #                 run_vm = True
                 
-                if choice == 3:
-                    run_rm = False    
+    #             if choice == 3:
+    #                 run_rm = False    
             
-            while run_vm:
-                operation_mode = self.cpu.get_operation_mode_flag()
-                if operation_mode == 1:
-                    choice = self.interface.step_by_step_menu()
-                    self.handle_step_by_step_menu(choice)
+    #         while run_vm:
+    #             operation_mode = self.cpu.get_operation_mode_flag()
+    #             if operation_mode == 1:
+    #                 choice = self.interface.step_by_step_menu()
+    #                 self.handle_step_by_step_menu(choice)
 
-                    if choice == 5:
-                        run_vm = False
+    #                 if choice == 5:
+    #                     run_vm = False
 
-                    if choice != 1:
-                        continue
+    #                 if choice != 1:
+    #                     continue
 
-                self.vm_list[0].exec()
+    #             self.vm_list[0].exec()
 
-                io_operation = self.cpu.si != 0 and self.cpu.si != 4
-                self.cpu.decrement_timer(io_operation)
+    #             io_operation = self.cpu.si != 0 and self.cpu.si != 4
+    #             self.cpu.decrement_timer(io_operation)
 
-                if self.test_interrupt():
-                    run_vm = self.exec_interrupt()
+    #             if self.test_interrupt():
+    #                 run_vm = self.exec_interrupt()
 
     # MAIN MENU
     def handle_main_menu(self, choice):

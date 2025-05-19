@@ -1,31 +1,40 @@
 from process import Process
+from resources.create_file import CreateFile
 
 class ReadFromInterface(Process):
-    def __init__(self, cpu):
+    def __init__(self, cpu, required_resources):
+        super().__init__(required_resources)
         # components
         self.cpu = cpu
         # process specific
         self.step = 1
-        self.input = None
+        self.buffer = None
 
 
     def exec(self):
         if self.step == 1:
-            self.step = 2
+            self.step = 2 # TODO: block
             return
 
         if self.step == 2:
-            self.input = input()
+            self.buffer = input()
             self.step = 3
             return
 
         if self.step == 3:
-            result = self.parse_run() # TODO: where to save program name?
-            self.step = 5 if result == None else 4
+            result = self.parse_run()
+            if result == None:
+                self.step = 5
+            else:
+                self.buffer = result
+                self.step = 4
             return
 
         if self.step == 4:
-            pass
+            rescource = CreateFile(self.buffer)
+            self.step = 1
+            # TODO: ideti i resursu list'a
+            return 
 
         if self.step == 5:
             pass
@@ -85,7 +94,6 @@ class ReadFromInterface(Process):
 
         if self.step == 17:
             pass
-
 
     # PARSING
     def parse_run(self):
