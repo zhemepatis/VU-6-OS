@@ -96,7 +96,7 @@ class ReadFromInterface(Process):
             return
 
         if self.step == 16:
-            resource = StringInMemory
+            resource = StringInMemory("Invalid command.")
             # TODO: ideti i resursu list'a
             self.step = 1
             return
@@ -166,11 +166,3 @@ class ReadFromInterface(Process):
 
     def get_block_str(self, memory, block_num): 
         return " ".join(f"{word:04X}" if isinstance(word, int) else str(word) for word in memory.memory[block_num])
-    
-
-    def print_invalid_command(self):
-        print("Invalid command.")
-
-
-    def print_rm_exit(self):
-        print("Exiting system. Thank you, come again!")

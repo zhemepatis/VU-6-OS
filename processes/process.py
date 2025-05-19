@@ -1,11 +1,11 @@
 from enums.process_states import ProcessStates
 
 class Process:
-    def __init__(self, required_resources):
+    def __init__(self):
         self.id = None
         self.cpu_state = None
         self.resource_list = []
-        self.required_resources = required_resources
+        self.required_resources = []
         self.state = None
         self.parent = None
         self.children = None
