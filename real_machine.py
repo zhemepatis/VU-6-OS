@@ -1,6 +1,6 @@
 from virtual_machine import *
-from resource_allocator import *
-from proccess_manager import *
+from managers.resource_allocator import *
+from managers.proccess_manager import *
 from components.memory import *
 from components.channel_device import *
 from components.pagination_mechanism import *
@@ -23,32 +23,26 @@ class RealMachine:
         # resources
         self.free_resources = []
         # managers
-        self.resource_allocator = ResourceAllocator(self.running, self.ready, self.blocked, self.ready_stopped, self.blocked_stopped, self.free_resources)
-        self.process_manager = ProcessManager(self.running, self.ready, self.blocked, self.ready_stopped, self.blocked_stopped, self.free_resources)
+        self.resource_allocator = ResourceAllocator(self.free_resources)
+        self.process_manager = ProcessManager(self.running, self.ready, self.blocked, self.ready_stopped, self.blocked_stopped)
         # initialisation
-        start_stop_process = StartStop(self.cpu, self.memory, self.pagination, self.channel_device, self.process_manager, self.resource_allocator)
-        self.process_manager.move_to_ready_state(start_stop_process)
-
-
-    def initialise_components(self):
-        self.cpu.initialise_channel_device(self.channel_device)
-        self.cpu.initialise_pagination(self.pagination)
-        self.cpu.initialise_memory(self.memory)
-
-        self.pagination.initialise_cpu(self.cpu)
-        self.pagination.initialise_memory(self.memory)
-
-        self.channel_device.initialise_cpu(self.cpu)
-        self.channel_device.initialise_memory(self.memory)
+        self.process_manager.move_to_ready_state(StartStopProcess(self.cpu, self.memory, self.pagination, self.channel_device, self.process_manager, self.resource_allocator))
 
 
     def run(self):
         run_rm = True
-
+        i  =  0
         while run_rm:
             self.running.exec()
 
-            print(self.blocked)
+            print(f'running: {self.running.__class__.__name__}')
+            print(f'ready: {[process.__class__.__name__ for process in self.ready]}')
+            print(f'blocked: {[process.__class__.__name__ for process in self.blocked]}')
+            print()
+
+            i += 1
+            if i > 5:
+                break
 
 
     # def run(self):

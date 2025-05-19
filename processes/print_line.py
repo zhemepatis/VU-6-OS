@@ -1,7 +1,9 @@
 from processes.process import Process
+from enums.process_states import *
 
 class PrintLineProcess(Process):
-    def __init__(self):
+    def __init__(self, parent, cpu):
+        super().__init__(cpu, ProcessStates.BLOCKED, parent, 10)
         # process specific
         self.step = 1
 

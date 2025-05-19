@@ -4,10 +4,13 @@ from resources.dynamic.exit_os import *
 from resources.dynamic.string_in_memory import * 
 
 class ReadFromInterfaceProcess(Process):
-    def __init__(self, cpu, required_resources):
-        super().__init__(required_resources)
+    def __init__(self, parent, cpu, process_manager, resource_allocator):
+        super().__init__(cpu, ProcessStates.BLOCKED, parent, 20)
         # components
         self.cpu = cpu
+        # managers
+        self.process_manager = process_manager
+        self.resource_allocator = resource_allocator
         # process specific
         self.step = 1
         self.buffer = None
@@ -34,7 +37,7 @@ class ReadFromInterfaceProcess(Process):
             return
 
         if self.step == 4:
-            rescource = CreateFile(self.buffer)
+            rescource = CreateFileResource(self.buffer)
             # TODO: ideti i resursu list'a
             self.step = 1
             return 
@@ -55,7 +58,7 @@ class ReadFromInterfaceProcess(Process):
             return
 
         if self.step == 8:
-            resource = ExitOS()
+            resource = ExitOSResource()
             # TODO: ideti i resursu list'a
             self.step = 1
             return
@@ -96,7 +99,7 @@ class ReadFromInterfaceProcess(Process):
             return
 
         if self.step == 16:
-            resource = StringInMemory("Invalid command.")
+            resource = StringInMemoryResource("Invalid command.")
             # TODO: ideti i resursu list'a
             self.step = 1
             return
