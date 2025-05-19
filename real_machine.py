@@ -33,13 +33,18 @@ class RealMachine:
         run_rm = True
         i  =  0
         while run_rm:
-            self.running[0].exec()
-
             print(f'running: {[process.__class__.__name__ for process in self.running]}')
             print(f'resources: {[process.__class__.__name__ for process in self.free_resources]}')
             print(f'ready: {[process.__class__.__name__ for process in self.ready]}')
             print(f'blocked: {[process.__class__.__name__ for process in self.blocked]}')
             print()
+
+            self.running[0].exec()
+
+            self.resource_allocator.allocate()
+            self.process_manager.prioritise()
+            if self.running.__len__() == 0:
+                self.process_manager.move_to_running_state(self.ready[0])
 
             i += 1
             if i > 5:

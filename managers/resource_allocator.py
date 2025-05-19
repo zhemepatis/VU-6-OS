@@ -6,6 +6,10 @@ class ResourceAllocator:
         self.free_resources = free_resources
 
     
+    def allocate(self):
+        pass
+
+    
     def initialise_process_manager(self, process_manager):
         self.process_manager = process_manager
 

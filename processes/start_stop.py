@@ -4,6 +4,7 @@ from processes.read_from_interface import *
 from processes.jcl import *
 from processes.main_proc import *
 from processes.interrupt import *
+from processes.idle import *
 from resources.static.channel_device import *
 from resources.static.shared_memory import *
 from resources.static.supervisor_memory import *
@@ -72,6 +73,7 @@ class StartStopProcess(Process):
         self.process_manager.move_to_blocked_state(MainProcProcess(self, self.cpu))
         self.process_manager.move_to_blocked_state(InterruptProcess(self, self.cpu))
         self.process_manager.move_to_blocked_state(PrintLineProcess(self, self.cpu))
+        self.process_manager.move_to_ready_state(IdleProcess(self, self.cpu))
 
 
     def initialise_components(self):

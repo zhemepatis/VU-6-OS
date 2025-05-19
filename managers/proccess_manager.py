@@ -17,7 +17,7 @@ class ProcessManager:
 
     
     def prioritise(self):
-        pass
+        self.ready.sort(key = lambda process: process.priority)
 
 
     def move_to_running_state(self, process):    
