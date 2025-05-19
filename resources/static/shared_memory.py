@@ -1,6 +1,6 @@
 from enums.resource_names import ResourceNames
 from resources.resource import Resource
 
-class ExitOS(Resource):
+class SharedMemory(Resource):
     def __init__(self):
-        super().__init__(ResourceNames.OS_PABAIGA)
+        super().__init__(ResourceNames.BENDROJI)
