@@ -1,91 +1,109 @@
-from process import Process
+from processes.process import *
+from resources.dynamic.create_file import *
+from resources.dynamic.exit_os import * 
+from resources.dynamic.string_in_memory import * 
 
-class ReadFromInterface(Process):
-    def __init__(self, cpu):
+class ReadFromInterfaceProcess(Process):
+    def __init__(self, parent, cpu, process_manager, resource_allocator):
+        super().__init__(cpu, None, parent, 20)
         # components
         self.cpu = cpu
+        # managers
+        self.process_manager = process_manager
+        self.resource_allocator = resource_allocator
         # process specific
         self.step = 1
-        self.input = None
+        self.buffer = None
 
 
     def exec(self):
         if self.step == 1:
+            self.check_for_required_resources()
             self.step = 2
             return
 
         if self.step == 2:
-            self.input = input()
+            self.buffer = input()
             self.step = 3
             return
 
         if self.step == 3:
-            result = self.parse_run() # TODO: where to save program name?
-            self.step = 5 if result == None else 4
+            result = self.parse_run()
+            if result == None:
+                self.step = 5
+            else:
+                self.buffer = result
+                self.step = 4
             return
 
         if self.step == 4:
-            pass
+            rescource = CreateFileResource(self.buffer)
+            # TODO: ideti i resursu list'a
+            self.step = 1
+            return 
 
         if self.step == 5:
-            pass
+            success = self.parse_one_word("SWITCHMODE")
+            self.step = 6 if success else 7
+            return
 
         if self.step == 6:
-            success = self.parse_one_word("SWITCHMODE")
-            self.step = 7 if success else 8
+            self.cpu.change_operation_mode_flag()
+            self.step = 1
             return
 
         if self.step == 7:
-            self.cpu.change_operation_mode_flag()
-            self.step = 5
+            success = self.parse_one_word("EXIT")
+            self.step = 8 if success else 9
             return
 
         if self.step == 8:
-            success = self.parse_one_word("EXIT")
-            self.step = 8 if success else 10
+            resource = ExitOSResource()
+            # TODO: ideti i resursu list'a
+            self.step = 1
             return
 
         if self.step == 9:
-            pass
+            step_by_step_mode = self.cpu.get_operation_mode_flag() == 1
+            self.step = 10 if step_by_step_mode else 16
+            return
 
         if self.step == 10:
-            step_by_step_mode = self.cpu.get_operation_mode_flag() == 1
-            self.step = 11 if step_by_step_mode else 13
+            success = self.parse_one_word("PRINTCPU")
+            self.step = 11 if success else 12
             return
 
         if self.step == 11:
-            success = self.parse_one_word("PRINTCPU")
-            self.step = 12 if success else 13
+            self.print_cpu()
+            self.step = 1
             return
 
         if self.step == 12:
-            self.print_cpu()
-            self.step = 4
+            success = self.parse_one_word("PRINTVM")
+            self.step = 13 if success else 14
             return
 
         if self.step == 13:
-            success = self.parse_one_word("PRINTVM")
-            self.step = 14 if success else 15
+            self.print_vm_memory()
+            self.step = 1
             return
 
         if self.step == 14:
-            self.print_vm_memory()
-            self.step = 4
+            success = self.parse_one_word("PRINTRM")
+            self.step = 15 if success else 16
             return
 
         if self.step == 15:
-            success = self.parse_one_word("PRINTRM")
-            self.step = 16 if success else 17
+            self.print_vm_memory()
+            self.step = 1
             return
 
         if self.step == 16:
-            self.print_vm_memory()
-            self.step = 4
+            resource = StringInMemoryResource("Invalid command.")
+            # TODO: ideti i resursu list'a
+            self.step = 1
             return
-
-        if self.step == 17:
-            pass
-
+        
 
     # PARSING
     def parse_run(self):
@@ -95,12 +113,14 @@ class ReadFromInterface(Process):
         
         return None
     
+    
     def parse_one_word(self, cmd):
         if self.input.startswith(cmd):
             return True
         
         return False
     
+
     # PRINTING
     def print_cpu(self, cpu):
         print("\nGeneral use registers")
@@ -134,6 +154,7 @@ class ReadFromInterface(Process):
             formatted_block = self.get_block_str(memory, i)
             self.print_block(i, formatted_block)
 
+
     def print_vm_memory(self, ptr, memory):
         print("\nVM memory:")
         for i in range(memory.BLOCK_LENGTH):
@@ -148,11 +169,3 @@ class ReadFromInterface(Process):
 
     def get_block_str(self, memory, block_num): 
         return " ".join(f"{word:04X}" if isinstance(word, int) else str(word) for word in memory.memory[block_num])
-    
-
-    def print_invalid_command(self):
-        print("Invalid command.")
-
-
-    def print_rm_exit(self):
-        print("Exiting system. Thank you, come again!")

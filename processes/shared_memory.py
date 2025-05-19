@@ -1,6 +1,6 @@
 from process import Process
 
-class SharedMemory(Process):
+class SharedMemoryProcess(Process):
     def __init__(self):
         # process specific
         self.step = 1

@@ -1,7 +1,9 @@
-from process import Process
+from processes.process import Process
+from enums.process_states import *
 
-class PrintLine(Process):
-    def __init__(self):
+class PrintLineProcess(Process):
+    def __init__(self, parent, cpu):
+        super().__init__(cpu, None, parent, 10)
         # process specific
         self.step = 1
 

@@ -1,7 +1,9 @@
 from process import Process
+from enums.process_states import *
 
-class JobGovernor(Process):
-    def __init__(self):
+class JobGovernorProcess(Process):
+    def __init__(self, parent, cpu):
+        super().__init__(cpu, None, parent, 30)
         # process specific
         self.step = 1
 
