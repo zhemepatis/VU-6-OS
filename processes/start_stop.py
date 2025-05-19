@@ -68,12 +68,29 @@ class StartStopProcess(Process):
 
 
     def initialise_permanent_processes(self):
-        self.process_manager.move_to_blocked_state(ReadFromInterfaceProcess(self, self.cpu, self.process_manager, self.resource_allocator))
-        self.process_manager.move_to_blocked_state(JCLProcess(self, self.cpu))
-        self.process_manager.move_to_blocked_state(MainProcProcess(self, self.cpu))
-        self.process_manager.move_to_blocked_state(InterruptProcess(self, self.cpu))
-        self.process_manager.move_to_blocked_state(PrintLineProcess(self, self.cpu))
-        self.process_manager.move_to_ready_state(IdleProcess(self, self.cpu))
+        process = ReadFromInterfaceProcess(self, self.cpu, self.process_manager, self.resource_allocator)
+        self.children.append(process)
+        self.process_manager.move_to_blocked_state(process)
+
+        process = JCLProcess(self, self.cpu)
+        self.children.append(process)
+        self.process_manager.move_to_blocked_state(process)
+
+        process = MainProcProcess(self, self.cpu)
+        self.children.append(process)
+        self.process_manager.move_to_blocked_state(process)
+
+        process = InterruptProcess(self, self.cpu)
+        self.children.append(process)
+        self.process_manager.move_to_blocked_state(process)
+
+        process = PrintLineProcess(self, self.cpu)
+        self.children.append(process)
+        self.process_manager.move_to_blocked_state(process)
+
+        process = IdleProcess(self, self.cpu)
+        self.children.append(process)
+        self.process_manager.move_to_ready_state(process)
 
 
     def initialise_components(self):
