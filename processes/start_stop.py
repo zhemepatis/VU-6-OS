@@ -13,7 +13,7 @@ from enums.process_states import *
 
 class StartStopProcess(Process):
     def __init__(self, cpu, memory, pagination, channel_device, process_manager, resource_allocator):
-        super().__init__(None)
+        super().__init__(cpu, None, None, 1000)
         # components
         self.cpu = cpu
         self.memory = memory
@@ -68,10 +68,10 @@ class StartStopProcess(Process):
 
     def initialise_permanent_processes(self):
         self.process_manager.move_to_blocked_state(ReadFromInterfaceProcess(self, self.cpu, self.process_manager, self.resource_allocator))
-        self.process_manager.move_to_blocked_state(JCLProcess(self))
-        self.process_manager.move_to_blocked_state(MainProcProcess(self))
-        self.process_manager.move_to_blocked_state(InterruptProcess(self))
-        self.process_manager.move_to_blocked_state(PrintLineProcess(self))
+        self.process_manager.move_to_blocked_state(JCLProcess(self, self.cpu))
+        self.process_manager.move_to_blocked_state(MainProcProcess(self, self.cpu))
+        self.process_manager.move_to_blocked_state(InterruptProcess(self, self.cpu))
+        self.process_manager.move_to_blocked_state(PrintLineProcess(self, self.cpu))
 
 
     def initialise_components(self):

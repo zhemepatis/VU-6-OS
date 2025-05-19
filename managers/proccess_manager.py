@@ -20,17 +20,28 @@ class ProcessManager:
         pass
 
 
-    def move_to_running_state(self, process):     
-        if process.state == ProcessStates.READY:
-            self.ready.remove(process)
+    def move_to_running_state(self, process):    
+        if process.state == None:
             process.state = ProcessStates.RUNNING
-            self.running = process
+            self.running.append(process)
             return
 
 
-    def move_to_ready_state(self, process):        
+        if process.state == ProcessStates.READY:
+            self.ready.remove(process)
+            process.state = ProcessStates.RUNNING
+            self.running.append(process)
+            return
+
+
+    def move_to_ready_state(self, process):
+        if process.state == None:
+            process.state = ProcessStates.READY
+            self.ready.append(process)
+            return
+
         if process.state == ProcessStates.RUNNING:
-            self.running = None
+            self.running.remove(process)
             process.state = ProcessStates.READY
             self.ready.append(process)
             return
@@ -48,9 +59,14 @@ class ProcessManager:
             return
 
 
-    def move_to_blocked_state(self, process):        
+    def move_to_blocked_state(self, process):     
+        if process.state == None:
+            process.state = ProcessStates.BLOCKED
+            self.blocked.append(process)
+            return
+
         if process.state == ProcessStates.RUNNING:
-            self.running = None
+            self.running.remove(process)
             process.state = ProcessStates.BLOCKED
             self.blocked.append(process)
             return

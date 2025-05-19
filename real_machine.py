@@ -15,7 +15,7 @@ class RealMachine:
         self.pagination = PaginationMechanism()
         self.channel_device = ChannelDevice()
         # processes
-        self.running = None
+        self.running = []
         self.ready = []
         self.blocked = []
         self.ready_stopped = []
@@ -26,16 +26,17 @@ class RealMachine:
         self.resource_allocator = ResourceAllocator(self.free_resources)
         self.process_manager = ProcessManager(self.running, self.ready, self.blocked, self.ready_stopped, self.blocked_stopped)
         # initialisation
-        self.process_manager.move_to_ready_state(StartStopProcess(self.cpu, self.memory, self.pagination, self.channel_device, self.process_manager, self.resource_allocator))
-
+        start_stop_process = StartStopProcess(self.cpu, self.memory, self.pagination, self.channel_device, self.process_manager, self.resource_allocator)
+        self.process_manager.move_to_running_state(start_stop_process)
 
     def run(self):
         run_rm = True
         i  =  0
         while run_rm:
-            self.running.exec()
+            self.running[0].exec()
 
-            print(f'running: {self.running.__class__.__name__}')
+            print(f'running: {[process.__class__.__name__ for process in self.running]}')
+            print(f'resources: {[process.__class__.__name__ for process in self.free_resources]}')
             print(f'ready: {[process.__class__.__name__ for process in self.ready]}')
             print(f'blocked: {[process.__class__.__name__ for process in self.blocked]}')
             print()

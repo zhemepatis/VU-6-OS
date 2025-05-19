@@ -3,7 +3,7 @@ from enums.process_states import *
 
 class MainProcProcess(Process):
     def __init__(self, parent, cpu):
-        super().__init__(cpu, ProcessStates.BLOCKED, parent, 30)
+        super().__init__(cpu, None, parent, 30)
         # process specific
         self.step = 1
 

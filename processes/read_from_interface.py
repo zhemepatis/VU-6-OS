@@ -5,7 +5,7 @@ from resources.dynamic.string_in_memory import *
 
 class ReadFromInterfaceProcess(Process):
     def __init__(self, parent, cpu, process_manager, resource_allocator):
-        super().__init__(cpu, ProcessStates.BLOCKED, parent, 20)
+        super().__init__(cpu, None, parent, 20)
         # components
         self.cpu = cpu
         # managers
