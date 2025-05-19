@@ -1,5 +1,7 @@
 from process import Process
 from resources.create_file import CreateFile
+from resources.exit_os import ExitOS 
+from resources.string_in_memory import StringInMemory 
 
 class ReadFromInterface(Process):
     def __init__(self, cpu, required_resources):
@@ -13,7 +15,8 @@ class ReadFromInterface(Process):
 
     def exec(self):
         if self.step == 1:
-            self.step = 2 # TODO: block
+            self.check_for_required_resources()
+            self.step = 2
             return
 
         if self.step == 2:
@@ -32,68 +35,72 @@ class ReadFromInterface(Process):
 
         if self.step == 4:
             rescource = CreateFile(self.buffer)
-            self.step = 1
             # TODO: ideti i resursu list'a
+            self.step = 1
             return 
 
         if self.step == 5:
-            pass
+            success = self.parse_one_word("SWITCHMODE")
+            self.step = 6 if success else 7
+            return
 
         if self.step == 6:
-            success = self.parse_one_word("SWITCHMODE")
-            self.step = 7 if success else 8
+            self.cpu.change_operation_mode_flag()
+            self.step = 1
             return
 
         if self.step == 7:
-            self.cpu.change_operation_mode_flag()
-            self.step = 5
+            success = self.parse_one_word("EXIT")
+            self.step = 8 if success else 9
             return
 
         if self.step == 8:
-            success = self.parse_one_word("EXIT")
-            self.step = 8 if success else 10
+            resource = ExitOS()
+            # TODO: ideti i resursu list'a
+            self.step = 1
             return
 
         if self.step == 9:
-            pass
+            step_by_step_mode = self.cpu.get_operation_mode_flag() == 1
+            self.step = 10 if step_by_step_mode else 16
+            return
 
         if self.step == 10:
-            step_by_step_mode = self.cpu.get_operation_mode_flag() == 1
-            self.step = 11 if step_by_step_mode else 13
+            success = self.parse_one_word("PRINTCPU")
+            self.step = 11 if success else 12
             return
 
         if self.step == 11:
-            success = self.parse_one_word("PRINTCPU")
-            self.step = 12 if success else 13
+            self.print_cpu()
+            self.step = 1
             return
 
         if self.step == 12:
-            self.print_cpu()
-            self.step = 4
+            success = self.parse_one_word("PRINTVM")
+            self.step = 13 if success else 14
             return
 
         if self.step == 13:
-            success = self.parse_one_word("PRINTVM")
-            self.step = 14 if success else 15
+            self.print_vm_memory()
+            self.step = 1
             return
 
         if self.step == 14:
-            self.print_vm_memory()
-            self.step = 4
+            success = self.parse_one_word("PRINTRM")
+            self.step = 15 if success else 16
             return
 
         if self.step == 15:
-            success = self.parse_one_word("PRINTRM")
-            self.step = 16 if success else 17
+            self.print_vm_memory()
+            self.step = 1
             return
 
         if self.step == 16:
-            self.print_vm_memory()
-            self.step = 4
+            resource = StringInMemory
+            # TODO: ideti i resursu list'a
+            self.step = 1
             return
-
-        if self.step == 17:
-            pass
+        
 
     # PARSING
     def parse_run(self):
@@ -103,12 +110,14 @@ class ReadFromInterface(Process):
         
         return None
     
+    
     def parse_one_word(self, cmd):
         if self.input.startswith(cmd):
             return True
         
         return False
     
+
     # PRINTING
     def print_cpu(self, cpu):
         print("\nGeneral use registers")
@@ -141,6 +150,7 @@ class ReadFromInterface(Process):
 
             formatted_block = self.get_block_str(memory, i)
             self.print_block(i, formatted_block)
+
 
     def print_vm_memory(self, ptr, memory):
         print("\nVM memory:")
