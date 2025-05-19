@@ -1,6 +1,6 @@
 from process import Process
 
-class VirtualMachine(Process):
+class VirtualMachineProcess(Process):
     def __init__(self):
         # process specific
         self.step = 1

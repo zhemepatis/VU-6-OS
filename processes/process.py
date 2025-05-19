@@ -4,16 +4,16 @@ class Process:
     def __init__(self):
         self.id = None
         self.cpu_state = None
-        self.resource_list = []
+        self.resources = []
         self.required_resources = []
-        self.state = ProcessStates.BLOCKED
+        self.state = None
         self.parent = None
         self.children = None
         self.priority = None
         
 
     def check_for_required_resources(self):
-        resource_list = [resource.name for resource in self.resource_list]
+        resource_list = [resource.name for resource in self.resources]
 
         for name in self.required_resources:
             if name not in resource_list:

@@ -1,6 +1,6 @@
-from process import Process
+from processes.process import *
 
-class MainProc(Process):
+class MainProcProcess(Process):
     def __init__(self):
         # process specific
         self.step = 1

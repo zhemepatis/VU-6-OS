@@ -25,6 +25,21 @@ class RealMachine:
         # managers
         self.resource_allocator = ResourceAllocator(self.running, self.ready, self.blocked, self.ready_stopped, self.blocked_stopped, self.free_resources)
         self.process_manager = ProcessManager(self.running, self.ready, self.blocked, self.ready_stopped, self.blocked_stopped, self.free_resources)
+        # initialisation
+        start_stop_process = StartStop(self.cpu, self.memory, self.pagination, self.channel_device, self.process_manager, self.resource_allocator)
+        self.process_manager.move_to_ready_state(start_stop_process)
+
+
+    def initialise_components(self):
+        self.cpu.initialise_channel_device(self.channel_device)
+        self.cpu.initialise_pagination(self.pagination)
+        self.cpu.initialise_memory(self.memory)
+
+        self.pagination.initialise_cpu(self.cpu)
+        self.pagination.initialise_memory(self.memory)
+
+        self.channel_device.initialise_cpu(self.cpu)
+        self.channel_device.initialise_memory(self.memory)
 
 
     def run(self):
@@ -32,6 +47,8 @@ class RealMachine:
 
         while run_rm:
             self.running.exec()
+
+            print(self.blocked)
 
 
     # def run(self):

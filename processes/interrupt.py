@@ -1,4 +1,4 @@
-class Interrupt:
+class InterruptProcess:
     def __init__(self):
         # process specific
         self.step = 1

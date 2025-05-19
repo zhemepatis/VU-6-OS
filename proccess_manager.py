@@ -62,3 +62,22 @@ class ProcessManager:
             process.state = ProcessStates.BLOCKED_STOPPED
             self.ready.append(process)
             return
+    
+
+    def destroy_process(self, process):
+        if process.state == ProcessStates.READY:
+            self.ready.remove(process)
+            return
+        
+        if process.state == ProcessStates.BLOCKED:
+            self.blocked.remove(process)
+            return
+        
+        if process.state == ProcessStates.READY_STOPPED:
+            self.ready_stopped.remove(process)
+            return
+        
+        if process.state == ProcessStates.BLOCKED_STOPPED:
+            self.blocked_stopped.remove(process)
+            return
+

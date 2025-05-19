@@ -9,8 +9,10 @@ class ResourceAllocator:
         # resources
         self.free_resources = free_resources
 
+
     def add_resource(self, resource):
         self.free_resources.append(resource)
+
 
     def remove_resource(self, resource):
         self.free_resources.remove(resource)

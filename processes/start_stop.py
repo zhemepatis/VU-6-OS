@@ -9,9 +9,11 @@ from resources.static.channel_device import *
 from resources.static.shared_memory import *
 from resources.static.supervisor_memory import *
 from resources.static.user_memory import *
+from enums.resource_names import *
 
-class StartStop(Process):
+class StartStopProcess(Process):
     def __init__(self, cpu, memory, pagination, channel_device, process_manager, resource_allocator):
+        super().__init__()
         # components
         self.cpu = cpu
         self.memory = memory
@@ -36,6 +38,7 @@ class StartStop(Process):
             return
 
         if self.step == 3:
+            self.required_resources = [ResourceNames.OS_PABAIGA]
             pass
 
         if self.step == 4:
@@ -47,38 +50,16 @@ class StartStop(Process):
 
 
     def initialise_system_resources(self):
-        # initialise commmunication between components
-        self.cpu.initialise_channel_device(self.channel_device)
-        self.cpu.initialise_pagination(self.pagination)
-        self.cpu.initialise_memory(self.memory)
-
-        self.pagination.initialise_cpu(self.cpu)
-        self.pagination.initialise_memory(self.memory)
-
-        self.channel_device.initialise_cpu(self.cpu)
-        self.channel_device.initialise_memory(self.memory)
-
-        # add resources
-        self.resource_allocator.add_resource(CPU())
-        self.resource_allocator.add_resource(ChannelDevice())
-        self.resource_allocator.add_resource(UserMemory())
-        self.resource_allocator.add_resource(SupervisorMemory())
-        self.resource_allocator.add_resource(SharedMemory())
+        self.resource_allocator.add_resource(CPUResource())
+        self.resource_allocator.add_resource(ChannelDeviceResource())
+        self.resource_allocator.add_resource(UserMemoryResource())
+        self.resource_allocator.add_resource(SupervisorMemoryResource())
+        self.resource_allocator.add_resource(SharedMemoryResource())
 
 
     def initialise_permanent_processes(self):
-        self.process_manager()
-
-        blocked_processes = [
-            ReadFromInterface(),
-            JCL(),
-            MainProc(),
-            Interrupt(),
-            PrintLine(),
-        ]
-
-        self.free_resources.append(blocked_processes)
-
-
-
-        
+        self.process_manager.move_to_blocked_state(ReadFromInterfaceProcess())
+        self.process_manager.move_to_blocked_state(JCLProcess())
+        self.process_manager.move_to_blocked_state(MainProcProcess())
+        self.process_manager.move_to_blocked_state(InterruptProcess())
+        self.process_manager.move_to_blocked_state(PrintLineProcess())        

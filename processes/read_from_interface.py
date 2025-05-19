@@ -1,9 +1,9 @@
-from process import Process
-from resources.create_file import CreateFile
-from resources.exit_os import ExitOS 
-from resources.string_in_memory import StringInMemory 
+from processes.process import *
+from resources.dynamic.create_file import *
+from resources.dynamic.exit_os import * 
+from resources.dynamic.string_in_memory import * 
 
-class ReadFromInterface(Process):
+class ReadFromInterfaceProcess(Process):
     def __init__(self, cpu, required_resources):
         super().__init__(required_resources)
         # components

@@ -1,6 +1,6 @@
-from process import Process
+from processes.process import Process
 
-class PrintLine(Process):
+class PrintLineProcess(Process):
     def __init__(self):
         # process specific
         self.step = 1
