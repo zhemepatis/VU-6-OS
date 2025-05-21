@@ -1,0 +1,6 @@
+Saugant CPU busena saugomi tik darbiniai registrai?
+Ar busenos ikelimas / iskelimas vyksta, kai keiciasi procesas?
+
+Ar procesas pat kviecia planuotoja / resursu paskirstytoja?
+Kada yra tas laikas, kai resursas duoda ta resursa, o planuotojas permaiso pasiruosusius proc?
+Ar sitie du komunikuoja?

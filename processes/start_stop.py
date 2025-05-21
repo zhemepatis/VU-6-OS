@@ -20,7 +20,7 @@ class StartStopProcess(Process):
         self.memory = memory
         self.pagination = pagination
         self.channel_device = channel_device
-        # managers
+
         self.process_manager = process_manager
         self.resource_allocator = resource_allocator
         # process specific
@@ -39,11 +39,7 @@ class StartStopProcess(Process):
             return
 
         if self.step == 3:
-            if ResourceNames.OS_PABAIGA not in self.resources and ResourceNames.OS_PABAIGA not in self.required_resources:
-                self.required_resources.append(ResourceNames.OS_PABAIGA)
-                self.process_manager.move_to_blocked_state(self)
-                return
-            
+            self.request_resource_once(ResourceNames.OS_PABAIGA)
             if ResourceNames.OS_PABAIGA in self.resources:
                 self.process_manager.move_to_ready_state(self)
                 self.step = 4

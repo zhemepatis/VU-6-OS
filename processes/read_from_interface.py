@@ -8,9 +8,6 @@ class ReadFromInterfaceProcess(Process):
         super().__init__(cpu, None, parent, 20)
         # components
         self.cpu = cpu
-        # managers
-        self.process_manager = process_manager
-        self.resource_allocator = resource_allocator
         # process specific
         self.step = 1
         self.buffer = None
@@ -18,7 +15,7 @@ class ReadFromInterfaceProcess(Process):
 
     def exec(self):
         if self.step == 1:
-            self.check_for_required_resources()
+            # TODO: request resource
             self.step = 2
             return
 
@@ -37,8 +34,8 @@ class ReadFromInterfaceProcess(Process):
             return
 
         if self.step == 4:
-            rescource = CreateFileResource(self.buffer)
-            # TODO: ideti i resursu list'a
+            resource = CreateFileResource(self.buffer)
+            self.resource_allocator.add_resource(resource)
             self.step = 1
             return 
 
@@ -59,7 +56,7 @@ class ReadFromInterfaceProcess(Process):
 
         if self.step == 8:
             resource = ExitOSResource()
-            # TODO: ideti i resursu list'a
+            self.resource_allocator.add_resource(resource)
             self.step = 1
             return
 
@@ -100,7 +97,7 @@ class ReadFromInterfaceProcess(Process):
 
         if self.step == 16:
             resource = StringInMemoryResource("Invalid command.")
-            # TODO: ideti i resursu list'a
+            self.resource_allocator.add_resource(resource)
             self.step = 1
             return
         
