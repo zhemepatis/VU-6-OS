@@ -1,17 +1,4 @@
 class Resource:
-    def __init__(self, name):
+    def __init__(self, name, resource_type):
         self.name = name
-
-    def create_resource(self, resource):
-        pass
-
-    def request_resource(self, resource):
-        pass
-
-    def destroy_resource(self, resource):
-        pass
-
-    def free_resource(self, resource):
-        pass
-
-    
+        self.type = resource_type
