@@ -23,11 +23,11 @@ class RealMachine:
         # resources
         self.free_resources = []
         # managers
-        self.resource_allocator = ResourceAllocator(self.free_resources)
+        self.resource_allocator = ResourceAllocator(self.running, self.ready, self.blocked, self.ready_stopped, self.blocked_stopped, self.free_resources)
         self.process_manager = ProcessManager(self.running, self.ready, self.blocked, self.ready_stopped, self.blocked_stopped)
         # initialisation
         start_stop_process = StartStopProcess(self.cpu, self.memory, self.pagination, self.channel_device, self.process_manager, self.resource_allocator)
-        self.process_manager.move_to_running_state(start_stop_process)
+        self.process_manager.create_process(start_stop_process)
 
     def run(self):
         run_rm = True
@@ -41,8 +41,6 @@ class RealMachine:
 
             self.running[0].exec()
 
-            self.resource_allocator.allocate()
-            self.process_manager.prioritise()
             if self.running.__len__() == 0:
                 self.process_manager.move_to_running_state(self.ready[0])
 

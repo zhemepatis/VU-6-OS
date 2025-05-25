@@ -14,13 +14,13 @@ from enums.process_states import *
 
 class StartStopProcess(Process):
     def __init__(self, cpu, memory, pagination, channel_device, process_manager, resource_allocator):
-        super().__init__(cpu, None, None, 1000)
+        super().__init__(cpu, ProcessStates.RUNNING, None, 1000)
         # components
         self.cpu = cpu
         self.memory = memory
         self.pagination = pagination
         self.channel_device = channel_device
-
+        # managers 
         self.process_manager = process_manager
         self.resource_allocator = resource_allocator
         # process specific
@@ -39,54 +39,59 @@ class StartStopProcess(Process):
             return
 
         if self.step == 3:
-            self.request_resource_once(ResourceNames.OS_PABAIGA)
-            if ResourceNames.OS_PABAIGA in self.resources:
-                self.process_manager.move_to_ready_state(self)
+            self.resource_allocator.request_resource(self, ResourceNames.OS_PABAIGA)
+
+            if self.state == ProcessStates.READY:
                 self.step = 4
-                return
+            
+            return
 
         if self.step == 4:
-            self.step = 5 # TODO: is this okay?
+            self.destroy_system_resources()
+            self.step = 5
             return
 
         if self.step == 5:
-            return #  TODO: what to do with that?
+            self.destroy_permanent_processes()
+            return
 
+
+    # INITIALISATION
 
     def initialise_system_resources(self):
         self.initialise_components()
         self.initialise_managers()
 
-        self.resource_allocator.add_resource(ChannelDeviceResource())
-        self.resource_allocator.add_resource(UserMemoryResource())
-        self.resource_allocator.add_resource(SupervisorMemoryResource())
-        self.resource_allocator.add_resource(SharedMemoryResource())
+        self.resource_allocator.create_resource(ChannelDeviceResource())
+        self.resource_allocator.create_resource(UserMemoryResource())
+        self.resource_allocator.create_resource(SupervisorMemoryResource())
+        self.resource_allocator.create_resource(SharedMemoryResource())
 
 
     def initialise_permanent_processes(self):
         process = ReadFromInterfaceProcess(self, self.cpu, self.process_manager, self.resource_allocator)
         self.children.append(process)
-        self.process_manager.move_to_blocked_state(process)
+        self.process_manager.create_process(process)
 
         process = JCLProcess(self, self.cpu)
         self.children.append(process)
-        self.process_manager.move_to_blocked_state(process)
+        self.process_manager.create_process(process)
 
         process = MainProcProcess(self, self.cpu)
         self.children.append(process)
-        self.process_manager.move_to_blocked_state(process)
+        self.process_manager.create_process(process)
 
         process = InterruptProcess(self, self.cpu)
         self.children.append(process)
-        self.process_manager.move_to_blocked_state(process)
+        self.process_manager.create_process(process)
 
         process = PrintLineProcess(self, self.cpu)
         self.children.append(process)
-        self.process_manager.move_to_blocked_state(process)
+        self.process_manager.create_process(process)
 
         process = IdleProcess(self, self.cpu)
         self.children.append(process)
-        self.process_manager.move_to_ready_state(process)
+        self.process_manager.create_process(process)
 
 
     def initialise_components(self):
@@ -104,3 +109,14 @@ class StartStopProcess(Process):
     def initialise_managers(self):
         self.process_manager.initialise_resource_allocator(self.resource_allocator)
         self.resource_allocator.initialise_process_manager(self.process_manager)
+
+
+    # DESTRUCTION
+
+    def destroy_permanent_processes(self):
+        self.process_manager.destroy_process(self)
+
+    
+    def destroy_system_resources(self):
+        for item in self.resource_allocator.free_resources:
+            self.resource_allocator.destroy_resource(item)

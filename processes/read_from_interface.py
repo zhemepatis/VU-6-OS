@@ -2,12 +2,16 @@ from processes.process import *
 from resources.dynamic.create_file import *
 from resources.dynamic.exit_os import * 
 from resources.dynamic.string_in_memory import * 
+from enums.resource_names import * 
 
 class ReadFromInterfaceProcess(Process):
     def __init__(self, parent, cpu, process_manager, resource_allocator):
         super().__init__(cpu, None, parent, 20)
         # components
         self.cpu = cpu
+        # managers
+        self.process_manager = process_manager
+        self.resource_allocator = resource_allocator
         # process specific
         self.step = 1
         self.buffer = None
@@ -15,7 +19,7 @@ class ReadFromInterfaceProcess(Process):
 
     def exec(self):
         if self.step == 1:
-            # TODO: request resource
+            self.resource_allocator.request_resource()
             self.step = 2
             return
 

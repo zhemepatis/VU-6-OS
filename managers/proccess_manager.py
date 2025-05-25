@@ -11,88 +11,50 @@ class ProcessManager:
         # managers
         self.resource_allocator = None
 
-    
+
+     # INITIALISATION
+
     def initialise_resource_allocator(self, resource_allocator):
         self.resource_allocator = resource_allocator
 
+
+    # PRIMITIVES
     
-    def prioritise(self):
-        self.ready.sort(key = lambda process: process.priority)
+    def get_next_process(self):
+        next_process = self.ready[0]
+        self.ready.remove(next_process)
+        self.running.append(next_process)
 
 
-    def move_to_running_state(self, process):    
-        if process.state == None:
-            process.state = ProcessStates.RUNNING
+    def create_process(self, process):
+        if process.state == ProcessStates.RUNNING:
             self.running.append(process)
             return
-
 
         if process.state == ProcessStates.READY:
-            self.ready.remove(process)
-            process.state = ProcessStates.RUNNING
-            self.running.append(process)
-            return
-
-
-    def move_to_ready_state(self, process):
-        if process.state == None:
-            process.state = ProcessStates.READY
-            self.ready.append(process)
-            return
-
-        if process.state == ProcessStates.RUNNING:
-            self.running.remove(process)
-            process.state = ProcessStates.READY
-            self.ready.append(process)
-            return
-
+            for i in range(self.ready.len()):
+                if self.ready[i].priority > process.priority:
+                    self.ready.insert(i, process)
+                    return
+        
         if process.state == ProcessStates.BLOCKED:
-            self.blocked.remove(process)
-            process.state = ProcessStates.READY
-            self.ready.append(process)
+            self.blocked.append(process)
             return
         
         if process.state == ProcessStates.READY_STOPPED:
-            self.ready_stopped.remove(process)
-            process.state = ProcessStates.READY
-            self.ready.append(process)
-            return
-
-
-    def move_to_blocked_state(self, process):     
-        if process.state == None:
-            process.state = ProcessStates.BLOCKED
-            self.blocked.append(process)
-            return
-
-        if process.state == ProcessStates.RUNNING:
-            self.running.remove(process)
-            process.state = ProcessStates.BLOCKED
-            self.blocked.append(process)
-            return
-
-        if process.state == ProcessStates.BLOCKED_STOPPED:
-            self.blocked_stopped.remove(process)
-            process.state = ProcessStates.BLOCKED
-            self.blocked.append(process)
-            return
-
-
-    def move_to_stopped_state(self, process):
-        if process.state == ProcessStates.READY:
-            self.ready.remove(process)
-            process.state = ProcessStates.READY_STOPPED
             self.ready_stopped.append(process)
             return
         
-        if process.state == ProcessStates.BLOCKED:
-            self.blocked.remove(process)
-            process.state = ProcessStates.BLOCKED_STOPPED
-            self.ready.append(process)
+        if process.state == ProcessStates.BLOCKED_STOPPED:
+            self.blocked_stopped.append(process)
             return
-    
+
 
     def destroy_process(self, process):
+        for child in process.children:
+            self.destroy_process(child)
+            self.children.remove(child)
+
         if process.state == ProcessStates.READY:
             self.ready.remove(process)
             return
