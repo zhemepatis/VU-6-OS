@@ -41,8 +41,8 @@ class RealMachine:
 
             self.running[0].exec()
 
-            if self.running.__len__() == 0:
-                self.process_manager.move_to_running_state(self.ready[0])
+            if len(self.running) == 0:
+                self.process_manager.get_next_process()
 
             i += 1
             if i > 5:

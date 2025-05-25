@@ -6,7 +6,7 @@ from enums.resource_names import *
 
 class ReadFromInterfaceProcess(Process):
     def __init__(self, parent, cpu, process_manager, resource_allocator):
-        super().__init__(cpu, None, parent, 20)
+        super().__init__(cpu, ProcessStates.BLOCKED, parent, 20)
         # components
         self.cpu = cpu
         # managers
@@ -19,7 +19,7 @@ class ReadFromInterfaceProcess(Process):
 
     def exec(self):
         if self.step == 1:
-            self.resource_allocator.request_resource()
+            self.resource_allocator.request_resource(self, ResourceNames.VARTOTOJO_IVESTIS)
             self.step = 2
             return
 

@@ -32,10 +32,14 @@ class ProcessManager:
             return
 
         if process.state == ProcessStates.READY:
-            for i in range(self.ready.len()):
-                if self.ready[i].priority > process.priority:
-                    self.ready.insert(i, process)
+            idx = 0
+            for item in self.ready:
+                if item.priority > process.priority:
+                    self.ready.insert(idx, process)
                     return
+                idx += 1
+
+            self.ready.append(process)
         
         if process.state == ProcessStates.BLOCKED:
             self.blocked.append(process)
@@ -51,6 +55,11 @@ class ProcessManager:
 
 
     def destroy_process(self, process):
+        # destroy all of created resources
+        for resource in process.created_resources:
+            self.resource_allocator.destroy(resource)
+
+        # destroy all of created processes
         for child in process.children:
             self.destroy_process(child)
             self.children.remove(child)

@@ -47,12 +47,12 @@ class StartStopProcess(Process):
             return
 
         if self.step == 4:
-            self.destroy_system_resources()
+            self.destroy_permanent_processes()
             self.step = 5
             return
 
         if self.step == 5:
-            self.destroy_permanent_processes()
+            self.destroy_system_resources()
             return
 
 
@@ -62,10 +62,25 @@ class StartStopProcess(Process):
         self.initialise_components()
         self.initialise_managers()
 
-        self.resource_allocator.create_resource(ChannelDeviceResource())
-        self.resource_allocator.create_resource(UserMemoryResource())
-        self.resource_allocator.create_resource(SupervisorMemoryResource())
-        self.resource_allocator.create_resource(SharedMemoryResource())
+        resource = ChannelDeviceResource()
+        self.resource_allocator.create_resource(resource)
+        self.created_resources.append(resource)
+
+        resource = UserMemoryResource()
+        self.resource_allocator.create_resource(resource)
+        self.created_resources.append(resource)
+
+        resource = ChannelDeviceResource()
+        self.resource_allocator.create_resource(resource)
+        self.created_resources.append(resource)
+
+        resource = SupervisorMemoryResource()
+        self.resource_allocator.create_resource(resource)
+        self.created_resources.append(resource)
+
+        resource = SharedMemoryResource()
+        self.resource_allocator.create_resource(resource)
+        self.created_resources.append(resource)
 
 
     def initialise_permanent_processes(self):

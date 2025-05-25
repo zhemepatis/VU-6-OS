@@ -3,7 +3,7 @@ from enums.process_states import *
 
 class IdleProcess(Process):
     def __init__(self, parent, cpu):
-        super().__init__(cpu, None, parent, 0)
+        super().__init__(cpu, ProcessStates.READY, parent, 0)
         # process specific
         self.step = 1
 
